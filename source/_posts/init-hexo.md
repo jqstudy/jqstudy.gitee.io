@@ -27,7 +27,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 * 官方下载地址: <u>[Git - Downloading Package (git-scm.com)](https://git-scm.com/download/win)</u>
 * 注意事项: 建议选择 64-bit Git for Windows Setup，并且安装时要勾选 Add to PATH 选项
 
-<img src="/images/Git.png" />
+<img src="/images/initHexo/Git.png" />
 
 * 安装后验证: 在 cmd 中输入命令 git --version, 查看 Git 版本
 
@@ -36,7 +36,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 * 官方下载地址: <u>[Node.js (nodejs.org)](https://nodejs.org/en)</u>
 * 注意事项: 使用 Node.js 官方安装程序时，请确保勾选 Add to PATH 选项（默认已勾选）
 
-<img src="/images/Node.png" />
+<img src="/images/initHexo/Node.png" />
 
 * 安装后验证: 在 cmd 中输入命令 node -v, 查看 Node 版本
   
@@ -51,7 +51,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
   说明: -g 表示全局安装，hexo-cli 为所安装的包
 * 安装后验证: 在 cmd 中输入命令 hexo -v, 可查看 hexo 版本
   
-<img src="/images/hexo.png" />
+<img src="/images/initHexo/hexo.png" />
 
 #### 2.2 注意事项
 
@@ -81,7 +81,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 * 新建一个名为: <u>[http://username.github.io](http://username.github.io)</u> 的仓库(username 为您的 Github 用户名)
 * 比如，如果您的 github 用户名是 test，那么您就新建名为 <u>[http://test.github.io](http://test.github.io)</u> 的仓库（必须是您的用户名，其它名称无效），将来你的网站访问地址就是 <u>[https://test.github.io](https://test.github.io)</u> 了。由此可见，每一个 github 账户最多只能创建一个这样可以直接使用域名访问的仓库。
   
-<img style="display: flex;width:80%;margin: 0 auto;" src="/images/github.png"/>
+<img style="display: flex;width:80%;margin: 0 auto;" src="/images/initHexo/github.png"/>
 
 * 注意事项:
 注册的邮箱一定要验证，否则不会成功;
@@ -99,19 +99,19 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
    
 2. 在 C:\Users\您的用户名 文件夹下右键打开 Git Bash Here 输入命令: ssh-keygen -t rsa -C "你的github登录邮箱" 生成.ssh秘钥，输入后连敲三次回车，出现下图情况代表成功
    
-<img src="/images/github-ssh.png" />
+<img src="/images/initHexo/github-ssh.png" />
 
 3. 生成了一个新的 C:\Users\您的用户名\ .ssh文件夹，打开这个文件夹，找到 .ssh\id_rsa.pub 文件，记事本打开并复制里面的内容
    
 4. 打开您的 github 主页，进入个人设置 -> SSH and GPG keys -> New SSH key，把复制的内容粘贴进去，title 随便填，保存即可，我们的公钥就添加成功了，设置好如下图:
 
-<img src="/images/github-key.png" />
+<img src="/images/initHexo/github-key.png" />
 
 5. 检测是否设置成功:
 
 输入命令: ssh -T git@github.com
 
-<img src="/images/github-success.png" />
+<img src="/images/initHexo/github-success.png" />
 
 看到以上信息说明 SSH 已配置成功!
 
@@ -133,11 +133,11 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
    
 2. 在 D:\hexo 文件夹下右键打开 Git Bash Here(控制台)，输入命令: hexo init 进行初始化
 
-<img src="/images/hexo-init.png" />
+<img src="/images/initHexo/hexo-init.png" />
 
 - hexo 会自动下载一些文件到这个目录，包括 node_modules，目录结构如下图:
 
-<img src="/images/hexo-file.png" />
+<img src="/images/initHexo/hexo-file.png" />
 
 3. 执行命令: hexo g 会在 public 文件夹下生成相关的 html 文件，这些文件将来需要提交到 Github 上
 
@@ -151,7 +151,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 
 2. 编辑 D:\hexo 目录下的 _config.yml 文件，在文件末尾添加如下内容:
 
-<img src="/images/upload-git.png" />
+<img src="/images/initHexo/upload-git.png" />
 
 - 注意: 其中 repository 中的内容即为 github 个人主页链接地址
 
@@ -179,17 +179,17 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 
 2. 执行命令: `git clone 主题http链接 themes/主题名称` 将主题下载至 themes 文件夹下
 
-<img src="/images/git-clone.png" />
+<img src="/images/initHexo/git-clone.png" />
 
 - 可以在该文件夹下查看是否下载成功
 
-<img src="/images/git-clone-file.png" />
+<img src="/images/initHexo/git-clone-file.png" />
 
 #### 5.3 使用主题
 
 - 打开 D:\hexo 目录下的 _config.yml 文件，在里面找到 theme: landscape改为theme: yilia-plus(yilia-plus为我们要使用的主题名)，然后执行 `hexo clean` 先删除旧的 html 文件，再执行 `hexo g` 重新生成，再执行 `hexo d` 推送到远程仓库
 
-<img src="/images/theme.png" />
+<img src="/images/initHexo/theme.png" />
 
 - 在浏览器输入相应域名，发现主题已更换
 - 注意: 可能需要等一段时间刷新才更换 please be patient
@@ -198,11 +198,11 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 
 您可以在 themes/fluid 文件夹中查看该主题的内容，并可编辑该文件夹中的 _config.yml 文件修改主题样式
 
-<img src="/images/update-theme.png" />
+<img src="/images/initHexo/update-theme.png" />
 
 - 注意: 记得编辑根目录下的 _config.yml 文件，将信息修改为自己的
 
-<img src="/images/Site.png" />
+<img src="/images/initHexo/Site.png" />
 
 ### 第六章 使用 Typora 编写博客
 
@@ -254,7 +254,7 @@ Hexo 有多种图片插入方式，可以将图片存放在本地引用或者将
 
 打开项目根目录中的 _config.yml 文件，将 _config.yml文件中的配置项 post_asset_folder 设为 true 后，执行命令 hexo new "post_name"，在 source/posts 中会生成文章 post_name.md 和同名文件夹 post_name。
 
-<img src="/images/post_name.png" />
+<img src="/images/initHexo/post_name.png" />
 
 将图片资源放在 post_name 文件夹中，文章就可以使用相对路径引用图片资源了。
 
