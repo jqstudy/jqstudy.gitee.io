@@ -42,7 +42,7 @@ function name(){}
 行内代码可以直接书写，`this is inline code` 样式
 ```
 
-<img src="/images/markdown/style_text.png" />
+行内代码可以直接书写，`this is inline code` 样式
 
 ### 5. 有序列表和无序列表
 
@@ -66,7 +66,19 @@ function name(){}
 - 第三个
 ```
 
-<img src="/images/markdown/list.png" />
+有序列表: 
+1. 第一个
+2. 第二个
+3. 第三个
+  1. 第三点的第一个
+  2. 第三点的第二个
+
+无序列表: 
+* 第一个
+- 第二个
+  - 第二个的第一个
+  - 第二个的第二个
+- 第三个
 
 ### 6. 文本加粗、倾斜和删除线
 
@@ -79,7 +91,10 @@ function name(){}
 ~~删除线~~
 ```
 
-<img src="/images/markdown/stong.png" />
+**加粗**
+*倾斜*
+***加粗和倾斜***
+~~删除线~~
 
 ### 7. 引用文本
 
@@ -87,7 +102,88 @@ function name(){}
 >引用文本
 ```
 
-<img src="/images/markdown/quote.png" />
+>引用文本
 
 ### 8. 分割线
 
+分割线写法很简单，只需要使用三个或三个以上 *** 或者 --- 即可。
+
+```shell
+***
+******
+---
+------
+```
+
+***
+******
+---
+------
+
+### 9. 图片
+
+1. [alt](url title)方式
+ 
+图片的引用的基本语法是：[alt](url title)，alt为图片下方文字，title为图片说明，即鼠标放上去后显示文案，url为图片路径。
+
+```shell
+![风景图](https://gimg2.baidu.com/image_search/src=http%3A%2F%2F1812.img.pp.sohu.com.cn%2Fimages%2Fblog%2F2009%2F11%2F18%2F18%2F8%2F125b6560a6ag214.jpg&refer=http%3A%2F%2F1812.img.pp.sohu.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621561120&t=d99b987e1a68ed50f149aa611e2ab62a "风景图片")
+```
+
+![风景图](https://gimg2.baidu.com/image_search/src=http%3A%2F%2F1812.img.pp.sohu.com.cn%2Fimages%2Fblog%2F2009%2F11%2F18%2F18%2F8%2F125b6560a6ag214.jpg&refer=http%3A%2F%2F1812.img.pp.sohu.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621561120&t=d99b987e1a68ed50f149aa611e2ab62a "风景图片")
+
+2. html标签方式
+
+```shell
+<div align=center><img width=400 src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2F1812.img.pp.sohu.com.cn%2Fimages%2Fblog%2F2009%2F11%2F18%2F18%2F8%2F125b6560a6ag214.jpg&refer=http%3A%2F%2F1812.img.pp.sohu.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621561120&t=d99b987e1a68ed50f149aa611e2ab62a" /></div>
+```
+
+<div align=center><img width=400 src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2F1812.img.pp.sohu.com.cn%2Fimages%2Fblog%2F2009%2F11%2F18%2F18%2F8%2F125b6560a6ag214.jpg&refer=http%3A%2F%2F1812.img.pp.sohu.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621561120&t=d99b987e1a68ed50f149aa611e2ab62a" /></div>
+
+### 10. 超链接
+
+超链接的格式和图片结构基本差不多，[超链接名称](url title)
+
+```shell
+[程序员学习圣地: 掘金](https://juejin.cn/)
+```
+
+[程序员学习圣地: 掘金](https://juejin.cn/)
+
+### 11. 表格
+
+表格的写法看上去很有意思，第一行可以写标题，然后第二行通过特殊标识区分表头和表内容，同时默认表格文字左对齐，如果想文本居中，可以通过第二行标识进行控制。
+
+```shell
+默认表格：
+姓名 | 年龄 | 班级 | 成绩
+-|:-|:-|:-|
+张三 | 20 | 一班 | 90
+张三 | 20 | 一班 | 80
+张三 | 20 | 一班 | 70
+张三 | 20 | 一班 | 99
+
+表格文本居中：(注意第二行变化)
+姓名 | 年龄 | 班级 | 成绩
+:-:|:-:|:-:|:-:|
+张三 | 20 | 一班 | 90
+张三 | 20 | 一班 | 80
+张三 | 20 | 一班 | 70
+张三 | 20 | 一班 | 99
+```
+
+默认表格：
+姓名 | 年龄 | 班级 | 成绩
+-|:-|:-|:-|
+张三 | 20 | 一班 | 90
+张三 | 20 | 一班 | 80
+张三 | 20 | 一班 | 70
+张三 | 20 | 一班 | 99
+
+表格文本居中：(注意第二行变化)
+姓名 | 年龄 | 班级 | 成绩
+:-:|:-:|:-:|:-:|
+张三 | 20 | 一班 | 90
+张三 | 20 | 一班 | 80
+张三 | 20 | 一班 | 70
+张三 | 20 | 一班 | 99
