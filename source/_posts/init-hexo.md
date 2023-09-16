@@ -2,7 +2,7 @@
 title: Hexo 博客搭建和使用教程
 date: 2023-08-28 16:39:29
 tags:
-categories: web前端
+categories: hexo
 ---
 从零搭建一个属于自己的静态博客网站，使用Hexo博客框架并部署到 Github，让您可以在不用购买云服务器的情况下拥有一个属于自己的博客网站。
 
