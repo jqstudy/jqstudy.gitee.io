@@ -206,7 +206,7 @@ export function useModal(params) {
     visible.value = false
     isTitle.value = true
     modalForm.value = params.defaultForm || {}
-    modalFormRefs.value && modalFormRefs.value.resetFileds && modalFormRefs.value.resetFields()
+    modalFormRefs.value && modalFormRefs.value.resetFields()
   }
 
   function submit() {
