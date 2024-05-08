@@ -1,0 +1,645 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="jqstudy">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. hooks定义一些可复用的方法像钩子一样挂着，可以随时被引入和调用以实现高内聚低耦合的目标，应该都能算是hook 2. 为什么Vue3要用自定义Hook？结论：就是为了让Compoosition Api更好用更丰满，让写Vue3更畅快！像写诗一样写代码！其实这个问题更深意义是为什么Vue3比Vue2更好！无外呼性能大幅度提升，其实编码体验也是Vue3的优点Composition Api的引入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue3-hooks方法">
+<meta property="og:url" content="http://example.com/2023/09/16/Vue3-hooks%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. hooks定义一些可复用的方法像钩子一样挂着，可以随时被引入和调用以实现高内聚低耦合的目标，应该都能算是hook 2. 为什么Vue3要用自定义Hook？结论：就是为了让Compoosition Api更好用更丰满，让写Vue3更畅快！像写诗一样写代码！其实这个问题更深意义是为什么Vue3比Vue2更好！无外呼性能大幅度提升，其实编码体验也是Vue3的优点Composition Api的引入">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-09-16T01:10:10.000Z">
+<meta property="article:modified_time" content="2023-09-16T01:10:10.000Z">
+<meta property="article:author" content="jqstudy">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Vue3-hooks方法 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>悠闲博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>文档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>文章</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Vue3-hooks方法"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-16 09:10" pubdate>
+          September 16, 2023 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.6k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          55 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Vue3-hooks方法</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="1-hooks定义"><a href="#1-hooks定义" class="headerlink" title="1. hooks定义"></a>1. hooks定义</h3><p>一些可复用的方法像钩子一样挂着，可以随时被引入和调用以实现高内聚低耦合的目标，应该都能算是hook</p>
+<h3 id="2-为什么Vue3要用自定义Hook？"><a href="#2-为什么Vue3要用自定义Hook？" class="headerlink" title="2. 为什么Vue3要用自定义Hook？"></a>2. 为什么Vue3要用自定义Hook？</h3><p>结论：就是为了让Compoosition Api更好用更丰满，让写Vue3更畅快！像写诗一样写代码！<br>其实这个问题更深意义是为什么Vue3比Vue2更好！无外呼性能大幅度提升，其实编码体验也是Vue3的优点<strong>Composition Api的引入（解决Option Api在代码量大的情况下的强耦合）</strong> 让开发者有更好的开发体验。<br>个人碎碎念：但是这些所谓的提高开发体验都是需要开发者不断学习养成编码好习惯</p>
+<h3 id="3-定义表格请求-hooks-uselist"><a href="#3-定义表格请求-hooks-uselist" class="headerlink" title="3. 定义表格请求 hooks uselist"></a>3. 定义表格请求 hooks uselist</h3><h4 id="3-1-js版"><a href="#3-1-js版" class="headerlink" title="3.1 js版"></a>3.1 js版</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; ref &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">ElMessage</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;element-plus&#x27;</span><br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 获取数据操作</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> Function </span>&#125; api 请求的方法 required</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; <span class="hljs-variable">page</span></span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; <span class="hljs-variable">size</span></span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; isAuto 是否是分页请求</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; key  返回数据的键值</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> callback </span>&#125; <span class="hljs-variable">cb</span></span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> &#123;<span class="hljs-type"> Object </span>&#125; &#123;<span class="hljs-type"> page,size,total,showSearch,loading,query,tableData,getList,reset </span>&#125;</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">useList</span>(<span class="hljs-params">api, params, cb</span>) &#123;<br>  <span class="hljs-keyword">if</span>(!api) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;api is not found&#x27;</span>)<br>  <span class="hljs-keyword">const</span> page = <span class="hljs-title function_">ref</span>(params.<span class="hljs-property">page</span> || <span class="hljs-number">1</span>)<br>  <span class="hljs-keyword">const</span> size = <span class="hljs-title function_">ref</span>(params.<span class="hljs-property">size</span> || <span class="hljs-number">10</span>)<br>  <span class="hljs-keyword">const</span> total = <span class="hljs-title function_">ref</span>(<span class="hljs-number">0</span>)<br>  <span class="hljs-keyword">const</span> query = <span class="hljs-title function_">ref</span>(&#123;&#125;)<br>  <span class="hljs-keyword">const</span> loading = <span class="hljs-title function_">ref</span>(<span class="hljs-literal">false</span>)<br>  <span class="hljs-keyword">const</span> showSearch = <span class="hljs-title function_">ref</span>(<span class="hljs-literal">true</span>)<br>  <span class="hljs-keyword">const</span> isAuto = <span class="hljs-title function_">ref</span>(params.<span class="hljs-property">isAuto</span> || <span class="hljs-literal">true</span>)<br>  <span class="hljs-keyword">const</span> tableData = <span class="hljs-title function_">ref</span>([])<br>  <span class="hljs-keyword">const</span> key = params.<span class="hljs-property">key</span> || <span class="hljs-string">&#x27;rows&#x27;</span><br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">getList</span>(<span class="hljs-params">obj = &#123;&#125;</span>) &#123;<br>    <span class="hljs-keyword">if</span>(!loading.<span class="hljs-property">value</span>) &#123;<br>      loading.<span class="hljs-property">value</span> = <span class="hljs-literal">true</span><br>      <span class="hljs-keyword">const</span> defaultParams = params.<span class="hljs-property">params</span> || &#123;&#125;<br>      <span class="hljs-keyword">const</span> data = isAuto.<span class="hljs-property">value</span> ? <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(obj, &#123; <span class="hljs-attr">pageNum</span>: page.<span class="hljs-property">value</span>, <span class="hljs-attr">pageSize</span>: size.<span class="hljs-property">vlaue</span> &#125;, query.<span class="hljs-property">value</span>, defaultParams) : <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(obj, query.<span class="hljs-property">value</span>, defaultParams)<br>      <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">api</span>(data).<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> &#123;<br>        loading.<span class="hljs-property">value</span> = <span class="hljs-literal">false</span><br>        tableData.<span class="hljs-property">value</span> = cb ? <span class="hljs-title function_">cb</span>(res[key]) : res[key]<br>        total.<span class="hljs-property">value</span> = res.<span class="hljs-property">total</span> || <span class="hljs-number">0</span><br>      &#125;).<span class="hljs-title function_">catch</span>(<span class="hljs-function"><span class="hljs-params">c</span> =&gt;</span> &#123;<br>        loading.<span class="hljs-property">value</span> = <span class="hljs-literal">false</span><br>        <span class="hljs-title class_">ElMessage</span>.<span class="hljs-title function_">error</span>(c)<br>      &#125;)<br>    &#125;<br>  &#125;<br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">reset</span>(<span class="hljs-params"></span>) &#123;<br>    query.<span class="hljs-property">value</span> = &#123;&#125;<br>    <span class="hljs-title function_">getList</span>()<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> &#123;<br>    page,<br>    size,<br>    total,<br>    query,<br>    loading,<br>    showSearch,<br>    tableData,<br>    getList,<br>    reset<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-2-ts版"><a href="#3-2-ts版" class="headerlink" title="3.2 ts版"></a>3.2 ts版</h4><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">import</span> &#123; ref, <span class="hljs-title class_">Ref</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">ElMessage</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;element-plus&#x27;</span><br><br><span class="hljs-keyword">interface</span> resultData&lt;T&gt; &#123;<br>  <span class="hljs-attr">code</span>: <span class="hljs-built_in">number</span><br>  rows?: <span class="hljs-title class_">Array</span>&lt;T&gt;<br>  <span class="hljs-attr">data</span>: <span class="hljs-title class_">Array</span>&lt;T&gt;<br>  total?: <span class="hljs-built_in">number</span><br>  <span class="hljs-attr">msg</span>: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-keyword">interface</span> paramsFace &#123;<br>  page?: <span class="hljs-built_in">number</span><br>  size?: <span class="hljs-built_in">number</span><br>  isAuto?: <span class="hljs-built_in">boolean</span><br>  key?: <span class="hljs-built_in">string</span><br>  params?: <span class="hljs-built_in">any</span><br>&#125;<br><br><span class="hljs-keyword">interface</span> resultFn&lt;searchForm, tableForm&gt; &#123;<br>  <span class="hljs-attr">page</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">number</span>&gt;<br>  <span class="hljs-attr">size</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">number</span>&gt;<br>  <span class="hljs-attr">total</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">number</span>&gt;<br>  <span class="hljs-attr">loading</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">boolean</span>&gt;<br>  <span class="hljs-attr">showSearch</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">boolean</span>&gt;<br>  <span class="hljs-attr">query</span>: <span class="hljs-title class_">Ref</span>&lt;searchForm&gt;<br>  <span class="hljs-attr">tableData</span>: <span class="hljs-title class_">Ref</span>&lt;tableForm[]&gt;<br>  <span class="hljs-attr">getList</span>: <span class="hljs-title class_">Function</span><br>  <span class="hljs-attr">reset</span>: <span class="hljs-title class_">Function</span><br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 获取数据操作</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> Function </span>&#125; api 请求的方法 required</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> paramsFace </span>&#125; <span class="hljs-variable">params</span></span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> callback </span>&#125; <span class="hljs-variable">cb</span></span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> &#123;<span class="hljs-type"> resultFn </span>&#125; &#123;<span class="hljs-type"> page,size,total,loading,query,tableData,getList,reset </span>&#125;</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> useList&lt;searchForm, tableForm&gt;(<span class="hljs-attr">api</span>: <span class="hljs-title class_">Function</span>, <span class="hljs-attr">params</span>: paramsFace, <span class="hljs-attr">cb</span>: <span class="hljs-title class_">Function</span>): resultFn &#123;<br>  <span class="hljs-keyword">if</span>(!api) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;api is not found&#x27;</span>)<br>  <span class="hljs-keyword">const</span> page = ref&lt;<span class="hljs-built_in">number</span>&gt;(params.<span class="hljs-property">page</span> || <span class="hljs-number">1</span>)<br>  <span class="hljs-keyword">const</span> size = ref&lt;<span class="hljs-built_in">number</span>&gt;(params.<span class="hljs-property">size</span> || <span class="hljs-number">10</span>)<br>  <span class="hljs-keyword">const</span> total = ref&lt;<span class="hljs-built_in">number</span>&gt;(<span class="hljs-number">0</span>)<br>  <span class="hljs-keyword">const</span> query = ref&lt;searchForm&gt;(&#123;&#125;)<br>  <span class="hljs-keyword">const</span> loading = ref&lt;<span class="hljs-built_in">boolean</span>&gt;(<span class="hljs-literal">false</span>)<br>  <span class="hljs-keyword">const</span> showSearch = ref&lt;<span class="hljs-built_in">boolean</span>&gt;(<span class="hljs-literal">true</span>)<br>  <span class="hljs-keyword">const</span> isAuto = ref&lt;<span class="hljs-built_in">boolean</span>&gt;(params.<span class="hljs-property">isAuto</span> || <span class="hljs-literal">true</span>)<br>  <span class="hljs-keyword">const</span> tableData = ref&lt;tableForm[]&gt;([])<br>  <span class="hljs-keyword">const</span> <span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span> = params.<span class="hljs-property">key</span> || <span class="hljs-string">&#x27;rows&#x27;</span><br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">getList</span>(<span class="hljs-params">obj = &#123;&#125;</span>) &#123;<br>    <span class="hljs-keyword">if</span>(!loading.<span class="hljs-property">value</span>) &#123;<br>      loading.<span class="hljs-property">value</span> = <span class="hljs-literal">true</span><br>      <span class="hljs-keyword">const</span> <span class="hljs-attr">defaultParams</span>: searchForm = params.<span class="hljs-property">params</span> || &#123;&#125;<br>      <span class="hljs-keyword">const</span> data = isAuto.<span class="hljs-property">value</span> ? <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(obj, &#123; <span class="hljs-attr">pageNum</span>: page.<span class="hljs-property">value</span>, <span class="hljs-attr">pageSize</span>: size.<span class="hljs-property">vlaue</span> &#125;, query.<span class="hljs-property">value</span>, defaultParams) : <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(obj, query.<span class="hljs-property">value</span>, defaultParams)<br>      <span class="hljs-title function_">api</span>(data).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res: resultData&lt;tableForm&gt;</span>) =&gt;</span> &#123;<br>        loading.<span class="hljs-property">value</span> = <span class="hljs-literal">false</span><br>        tableData.<span class="hljs-property">value</span> = cb ? <span class="hljs-title function_">cb</span>(res[key]) : res[key]<br>        total.<span class="hljs-property">value</span> = res.<span class="hljs-property">total</span> || <span class="hljs-number">0</span><br>      &#125;).<span class="hljs-title function_">catch</span>(<span class="hljs-function"><span class="hljs-params">c</span> =&gt;</span> &#123;<br>        loading.<span class="hljs-property">value</span> = <span class="hljs-literal">false</span><br>        <span class="hljs-title class_">ElMessage</span>.<span class="hljs-title function_">error</span>(c)<br>      &#125;)<br>    &#125;<br>  &#125;<br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">reset</span>(<span class="hljs-params"></span>) &#123;<br>    query.<span class="hljs-property">value</span> = &#123;&#125;<br>    <span class="hljs-title function_">getList</span>()<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> &#123;<br>    page,<br>    size,<br>    total,<br>    query,<br>    loading,<br>    showSearch,<br>    tableData,<br>    getList,<br>    reset<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-弹窗-useModal"><a href="#4-弹窗-useModal" class="headerlink" title="4. 弹窗 useModal"></a>4. 弹窗 useModal</h3><h4 id="4-1-js版"><a href="#4-1-js版" class="headerlink" title="4.1 js版"></a>4.1 js版</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; ref, <span class="hljs-title class_">Ref</span>, computed &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 弹窗操作</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; defaultForm 默认参数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; add </span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; edit </span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> &#123;<span class="hljs-type"> Object </span>&#125; &#123;<span class="hljs-type"></span></span><br><span class="hljs-type"><span class="hljs-comment"> *  visible,</span></span><br><span class="hljs-type"><span class="hljs-comment">    isTitle,</span></span><br><span class="hljs-type"><span class="hljs-comment">    modalForm,</span></span><br><span class="hljs-type"><span class="hljs-comment">    modalFormRefs,</span></span><br><span class="hljs-type"><span class="hljs-comment">    title,</span></span><br><span class="hljs-type"><span class="hljs-comment">    open,</span></span><br><span class="hljs-type"><span class="hljs-comment">    close,</span></span><br><span class="hljs-type"><span class="hljs-comment">    submit</span></span><br><span class="hljs-type"><span class="hljs-comment">    </span>&#125;</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">useModal</span>(<span class="hljs-params">params</span>) &#123;<br>  <span class="hljs-keyword">const</span> visible = <span class="hljs-title function_">ref</span>(<span class="hljs-literal">false</span>)<br>  <span class="hljs-keyword">const</span> isTitle = <span class="hljs-title function_">ref</span>(<span class="hljs-literal">true</span>)<br>  <span class="hljs-keyword">const</span> modalForm = <span class="hljs-title function_">ref</span>(params.<span class="hljs-property">defaultForm</span> || &#123;&#125;)<br>  <span class="hljs-keyword">const</span> modalFormRefs = <span class="hljs-title function_">ref</span>(<span class="hljs-literal">null</span>)<br>  <span class="hljs-keyword">const</span> title = <span class="hljs-title function_">computed</span>(<span class="hljs-function">() =&gt;</span> isTitle.<span class="hljs-property">value</span> ? <span class="hljs-string">&#x27;添加&#x27;</span> : <span class="hljs-string">&#x27;修改&#x27;</span>)<br>  <br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">open</span>(<span class="hljs-params"></span>) &#123;<br>    visible.<span class="hljs-property">value</span> = <span class="hljs-literal">true</span><br>  &#125;<br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">close</span>(<span class="hljs-params"></span>) &#123;<br>    visible.<span class="hljs-property">value</span> = <span class="hljs-literal">false</span><br>    isTitle.<span class="hljs-property">value</span> = <span class="hljs-literal">true</span><br>    modalForm.<span class="hljs-property">value</span> = params.<span class="hljs-property">defaultForm</span> || &#123;&#125;<br>    modalFormRefs.<span class="hljs-property">value</span> &amp;&amp; modalFormRefs.<span class="hljs-property">value</span>.<span class="hljs-title function_">resetFields</span>()<br>  &#125;<br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">submit</span>(<span class="hljs-params"></span>) &#123;<br>    modalFormRefs.<span class="hljs-property">value</span> &amp;&amp; modalFormRefs.<span class="hljs-property">value</span>.<span class="hljs-title function_">validate</span>(<span class="hljs-function"><span class="hljs-params">valid</span> =&gt;</span> &#123;<br>      <span class="hljs-keyword">if</span>(!valid) <span class="hljs-keyword">return</span><br>      isTitle.<span class="hljs-property">value</span> ? params.<span class="hljs-title function_">add</span>(modalForm.<span class="hljs-property">value</span>) : params.<span class="hljs-title function_">edit</span>(modalForm.<span class="hljs-property">value</span>)<br>    &#125;)<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> &#123;<br>    visible,<br>    isTitle,<br>    modalForm,<br>    modalFormRefs,<br>    title,<br>    open,<br>    close,<br>    submit<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-2-ts版"><a href="#4-2-ts版" class="headerlink" title="4.2 ts版"></a>4.2 ts版</h4><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">import</span> &#123; ref, <span class="hljs-title class_">Ref</span>, computed &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><br><span class="hljs-keyword">interface</span> resultFn&lt;T&gt; &#123;<br>  <span class="hljs-attr">visible</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">boolean</span>&gt;<br>  <span class="hljs-attr">isTitle</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">boolean</span>&gt;<br>  <span class="hljs-attr">modalForm</span>: T<br>  <span class="hljs-attr">modalFormRefs</span>: <span class="hljs-built_in">any</span><br>  <span class="hljs-attr">title</span>: <span class="hljs-title class_">Ref</span>&lt;<span class="hljs-built_in">string</span>&gt;<br>  <span class="hljs-attr">open</span>: <span class="hljs-title class_">Function</span><br>  <span class="hljs-attr">close</span>: <span class="hljs-title class_">Function</span><br>  <span class="hljs-attr">submit</span>: <span class="hljs-title class_">Function</span><br>&#125;<br><br><span class="hljs-keyword">interface</span> defaultFace&lt;T&gt; &#123;<br>  defaultForm?: T<br>  add?: <span class="hljs-title class_">Function</span><br>  edit?: <span class="hljs-title class_">Function</span><br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 弹窗操作</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; defaultForm 默认参数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; add </span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> &#123;<span class="hljs-type"> params </span>&#125; edit </span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> &#123;<span class="hljs-type"> resultFn </span>&#125; </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> useModal&lt;paramsForm, resultForm&gt;(<span class="hljs-attr">params</span>: defaultFace&lt;paramsForm&gt;): resultFn&lt;resultForm&gt; &#123;<br>  <span class="hljs-keyword">const</span> visible = ref&lt;<span class="hljs-built_in">boolean</span>&gt;(<span class="hljs-literal">false</span>)<br>  <span class="hljs-keyword">const</span> isTitle = ref&lt;<span class="hljs-built_in">boolean</span>&gt;(<span class="hljs-literal">true</span>)<br>  <span class="hljs-keyword">const</span> modalForm = ref&lt;resultForm&gt;(params.<span class="hljs-property">defaultForm</span> || &#123;&#125;)<br>  <span class="hljs-keyword">const</span> modalFormRefs = ref&lt;<span class="hljs-built_in">any</span>&gt;(<span class="hljs-literal">null</span>)<br>  <span class="hljs-keyword">const</span> title = <span class="hljs-title function_">computed</span>(<span class="hljs-function">() =&gt;</span> isTitle.<span class="hljs-property">value</span> ? <span class="hljs-string">&#x27;添加&#x27;</span> : <span class="hljs-string">&#x27;修改&#x27;</span>)<br>  <br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">open</span>(<span class="hljs-params"></span>) &#123;<br>    visible.<span class="hljs-property">value</span> = <span class="hljs-literal">true</span><br>  &#125;<br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">close</span>(<span class="hljs-params"></span>) &#123;<br>    visible.<span class="hljs-property">value</span> = <span class="hljs-literal">false</span><br>    isTitle.<span class="hljs-property">value</span> = <span class="hljs-literal">true</span><br>    modalForm.<span class="hljs-property">value</span> = params.<span class="hljs-property">defaultForm</span> || &#123;&#125;<br>    modalFormRefs.<span class="hljs-property">value</span> &amp;&amp; modalFormRefs.<span class="hljs-property">value</span>.<span class="hljs-property">resetFileds</span> &amp;&amp; modalFormRefs.<span class="hljs-property">value</span>.<span class="hljs-title function_">resetFileds</span>()<br>  &#125;<br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">submit</span>(<span class="hljs-params"></span>) &#123;<br>    modalFormRefs.<span class="hljs-property">value</span> &amp;&amp; modalFormRefs.<span class="hljs-property">value</span>.<span class="hljs-title function_">validate</span>(<span class="hljs-function"><span class="hljs-params">valid</span> =&gt;</span> &#123;<br>      <span class="hljs-keyword">if</span>(!valid) <span class="hljs-keyword">return</span><br>      isTitle.<span class="hljs-property">value</span> ? params.<span class="hljs-title function_">add</span>(modalForm.<span class="hljs-property">value</span>) : params.<span class="hljs-title function_">edit</span>(modalForm.<span class="hljs-property">value</span>)<br>    &#125;)<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> &#123;<br>    visible,<br>    isTitle,<br>    modalForm,<br>    modalFormRefs,<br>    title,<br>    open,<br>    close,<br>    submit<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web%E5%89%8D%E7%AB%AF/" class="category-chain-item">web前端</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Vue3-hooks方法</div>
+      <div>http://example.com/2023/09/16/Vue3-hooks方法/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>jqstudy</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>September 16, 2023</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/10/24/Worker%E8%AF%A6%E8%A7%A3/" title="Worker详解">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Worker详解</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/14/Vue2%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/" title="Vue2组件通信方式">
+                        <span class="hidden-mobile">Vue2组件通信方式</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
