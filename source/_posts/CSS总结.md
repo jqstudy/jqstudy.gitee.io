@@ -1,5 +1,5 @@
 ---
-title: CSS面试总结
+title: CSS总结
 date: 2023-12-18 21:44:00
 tags:
 categories: web前端
@@ -155,20 +155,20 @@ CSS的优先级是根据样式声明的特殊性值来判断的。
 #### 9. 如何居中 div？
 
 - 水平居中：给 div 设置一个宽度，然后添加 margin:0 auto 属性
-```
+```css
 div {
   width: 200px;
   margin: 0 auto;
 }
 ```
 - 水平居中，利用 text-align:center 实现
-```
+```css
 .container {
   text-align: center;
 }
 ```
 - 让绝对定位的 div 居中
-```
+```css
 div {
   position: absolute;
   width: 300px;
@@ -181,9 +181,10 @@ div {
 }
 ```
 - 水平垂直居中一
-```
+```css
 /*确定容器的宽高宽500高300的层设置层的外边距div{*/
-position: absolute;/*绝对定位*/
+div {
+  position: absolute;/*绝对定位*/
   width: 500px;
   height: 300px;
   top: 50%;
@@ -193,7 +194,7 @@ position: absolute;/*绝对定位*/
 }
 ```
 - 水平垂直居中二
-```
+```css
 /*未知容器的宽高，利用`transform`属性*/
 div {
   position: absolute; /*相对定位或绝对定位均可*/
@@ -206,7 +207,7 @@ div {
 }
 ```
 - 水平垂直居中三
-```
+```css
 /*利用flex布局实际使用时应考虑兼容性*/
 .container {
   display: flex;
@@ -220,7 +221,7 @@ div {
 }
 ```
 - 水平垂直居中四
-```
+```css
 /*利用text-align:center和vertical-align:middle属性*/
 .container {
   position: fixed;
@@ -336,3 +337,775 @@ div {
 &nbsp;&nbsp;对于容器中的弹性元素，我们可以使用order属性来指定元素的排列顺序，还可以使用flex-grow来指定当排列空间有剩余的时候，元素的增长系数。还可以使用flex-shrink来指定当排列空间不足时，元素的缩减系数。
 
 #### 14. 用纯 CSS 创建一个三角形的原理是什么？
+
+```css
+  /*
+    采用的是相邻边框连接处的均分原理。
+    将元素的宽高设为0，只设置border，把任意三条边隐藏掉（颜色设为transparent），剩下的就是一个三角形。
+  */
+  #demo {
+    width: 0;
+    height: 0;
+    border-width: 20px;
+    border-style: solid;
+    border-color: transparent transparent red transparent;
+    border-top: none;   /*加上这一行可以让三角形顶格， 不加三角形会下移20px*/
+  }
+```
+
+#### 15.一个满屏品字布局如何设计?
+
+简单的方式: 
+  上面div宽度为100%
+  下面两个div宽度为50%
+  然后用float或者inline使其不换行即可
+
+```html
+  <style>
+    *{    /* 去除所有元素默认的内外边距的值 */
+      padding: 0;
+      margin: 0;
+    }
+
+    html, body{   /* 默认HTML，body的高度为0，为其设置高度以使后面的div可以用百分比设置高度 */
+      height: 100%;
+    }
+    
+    .header{
+      width: 50%;
+      height: 50%;
+      margin: 0 auto;
+      background-color: orange;
+    }
+
+    .main{
+      width: 100%;
+      height: 50%;
+    }
+
+    .main .left{
+      float: left;
+      width: 50%;
+      height: 100%;
+      background-color: #bfa;
+    }
+
+    .main .right{
+      float: left;
+      width: 50%;
+      height: 100%;
+      background-color: pink;
+    }
+  </style>
+
+  <div class="header"></div>
+  <div class="main">
+    <div class="left"></div>
+    <div class="right"></div>
+  </div>
+```
+
+#### 16.CSS 多列等高如何实现？
+
+1. 利用padding-bottom|margin-bottom正负值相抵，不会影响页面布局的特点。设置父容器超出隐藏（overflow:hidden），这样父容器的高度就还是它里面的列没有设定padding-bottom时的高度，当它里面的任一列高度增加了，则父容器的高度被撑到里面最高那列的高度，其他比这列矮的列会用它们的padding-bottom补偿这部分高度差。
+
+2. 利用table-cell所有单元格高度都相等的特性，来实现多列等高。
+
+3. 利用flex布局中弹性元素align-items属性默认为stretch，如果弹性元素未设置高度或设为auto，将占满整个容器的高度
+的特性，来实现多列等高。
+
+详细资料可以参考：
+[《前端应该掌握的 CSS 实现多列等高布局》](https://juejin.im/post/5b0fb34151882515662238fd)
+[《CSS：多列等高布局》](https://codepen.io/yangbo5207/post/equh)
+
+#### 17.经常遇到的浏览器的兼容性有哪些？原因，解决方法是什么，常用 hack 的技巧？
+
+1. png24位的图片在iE6浏览器上出现背景
+   解决方案：做成PNG8，也可以引用一段脚本处理。
+
+2. 浏览器默认的margin和padding不同
+   解决方案：加一个全局的*{margin:0;padding:0;}来统一。
+
+3. IE6双边距bug：在IE6下，如果对元素设置了浮动，同时又设置了margin-left或margin-right，margin值会加倍。
+   #box{float:left;width:10px;margin:0 0 0 10px;} 这种情况之下IE会产生20px的距离
+   解决方案：在float的标签样式控制中加入_display:inline;将其转化为行内属性。(_这个符号只有ie6会识别)
+
+4. 渐进识别的方式，从总体中逐渐排除局部。
+   解决方案: 首先，巧妙的使用"\9"这一标记，将IE浏览器从所有情况中分离出来。
+            接着，再次使用"+"将IE8和IE7、IE6分离开来，这样IE8已经独立识别。
+            .bb{
+              background-color:#f1ee18;/*所有识别*/
+              background-color:#00deff\9;/*IE6、7、8识别*/
+              +background-color:#a200ff;/*IE6、7识别*/
+              _background-color:#1e0bd1;/*IE6识别*/
+            }
+  
+5. IE下，可以使用获取常规属性的方法来获取自定义属性，也可以使用getAttribute()获取自定义属性；Firefox下，只能使用getAttribute()获取自定义属性
+   解决方法：统一通过getAttribute()获取自定义属性。
+  
+6. IE下，event对象有x、y属性，但是没有pageX、pageY属性;Firefox下，event对象有pageX、pageY属性，但是没有x、y属性。
+   解决方法：（条件注释）缺点是在IE浏览器下可能会增加额外的HTTP请求数。
+
+7. Chrome中文界面下默认会将小于12px的文本强制按照12px显示
+   - 可通过加入CSS属性-webkit-text-size-adjust:none;解决。但是，在chrome更新到27版本之后就不可以用了。
+   - 还可以使用-webkit-transform:scale(0.5);注意-webkit-transform:scale(0.75);收缩的是整个span的大小，这时候，必须要将span转换成块元素，可以使用display：block/inline-block/...；
+
+8. 超链接访问过后hover样式就不出现了，被点击访问过的超链接样式不再具有hover和active了
+   解决方法：改变CSS属性的排列顺序L-V-H-A
+
+9. 怪异模式问题：漏写DTD声明，Firefox仍然会按照标准模式来解析网页，但在IE中会触发怪异模式。为避免怪异模式给我们带来不必要的麻烦，最好 养成书写DTD声明的好习惯。
+
+#### 18.li 与 li 之间有看不见的空白间隔是什么原因引起的？有什么解决办法？
+
+  浏览器会把inline元素间的空白字符（空格、换行、Tab等）渲染成一个空格。而为了美观。我们通常是一个`<li>`放在一行，这导致`<li>`换行后产生换行字符，它变成一个空格，占用了一个字符的宽度。
+  解决办法：
+   1. 为`<li>`设置float:left。不足：有些容器是不能设置浮动，如左右切换的焦点图等。
+   2. 将所有`<li>`写在同一行。不足：代码不美观。
+   3. 将`<ul>`内的字符尺寸直接设为0，即font-size:0。不足：`<ul>`中的其他字符尺寸也被设为0，需要额外重新设定其他
+      字符尺寸，且在Safari浏览器依然会出现空白间隔。
+   4. 消除`<ul>`的字符间隔letter-spacing:-8px，不足：这也设置了`<li>`内的字符间隔，因此需要将`<li>`内的字符
+      间隔设为默认letter-spacing:normal。
+
+#### 19.为什么要初始化 CSS 样式？
+
+1. 因为浏览器的兼容问题，不同浏览器对有些标签的默认值是不同的，如果没对CSS初始化往往会出现浏览器之间的页面显示差异。
+2. 当然，初始化样式会对SEO有一定的影响，但鱼和熊掌不可兼得，但力求影响最小的情况下初始化。
+   最简单的初始化方法：*{padding:0;margin:0;}（强烈不建议）
+   
+```css
+  /*淘宝初始化样式*/
+  body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend
+  ,button,input,textarea,th,td{margin:0;padding:0;}
+  body,button,input,select,textarea{font:12px/1.5tahoma,arial,\5b8b\4f53;}
+  h1,h2,h3,h4,h5,h6{font-size:100%;}
+  address,cite,dfn,em,var{font-style:normal;}
+  code,kbd,pre,samp{font-family:couriernew,courier,monospace;}
+  small{font-size:12px;}
+  ul,ol{list-style:none;}
+  a{text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  sup{vertical-align:text-top;}
+  sub{vertical-align:text-bottom;}
+  legend{color:#000;}
+  fieldset,img{border:0;}
+  button,input,select,textarea{font-size:100%;}
+  table{border-collapse:collapse;border-spacing:0;}
+```
+
+#### 20.什么是包含块，对于包含块的理解?
+
+ 包含块（containing block）就是元素用来计算和定位的一个框。
+ 1. 根元素（很多场景下可以看成是<html>）被称为“初始包含块”，其尺寸等同于浏览器可视窗口的大小。
+ 2. 对于其他元素，如果该元素的position是relative或者static，则“包含块”由其最近的块级祖先元素的content box边界形成。
+ 3. 如果元素position:fixed，则“包含块”是“初始包含块”。
+ 4. 如果元素position:absolute，则“包含块”由最近的position不为static的祖先元素建立，具体方式如下：
+    如果该祖先元素是纯inline元素，则规则略复杂：
+    - 假设给内联元素的前后各生成一个宽度为0的内联盒子（inline box），则这两个内联盒子的padding box外面的包围盒就是内联元素的“包含块”；
+    - 如果该内联元素被跨行分割了，那么“包含块”是未定义的，也就是CSS2.1规范并没有明确定义，浏览器自行发挥否则，“包含块”由该祖先的padding box边界形成。
+    如果没有符合条件的祖先元素，则“包含块”是“初始包含块”。
+```text
+  简单描述：默认情况下包含块就是离当前元素最近的块级祖先元素；
+		对于开启了绝对定位的元素来说，包含块是离它最近的开启了定位（且position不为static）的祖先元素，
+		如果所有的祖先元素都没有开启定位，则其包含块就是初始包含块。
+```
+
+#### 21.CSS 里的 visibility 属性有个 collapse 属性值是干嘛用的？在不同浏览器下以后什么区别？
+
+- 对于一般的元素，它的表现跟visibility：hidden;是一样的。元素是不可见的，但此时仍占用页面空间。
+- 但例外的是，如果这个元素是table相关的元素，例如table行，table group，table列，table column group，它的表现却跟display:none一样，也就是说，它们占用的空间也会释放。
+  在不同浏览器下的区别：
+    在谷歌浏览器里，使用collapse值和使用hidden值没有什么区别。
+    在火狐浏览器、Opera和IE11里，使用collapse值的效果就如它的字面意思：table的行会消失，它的下面一行会补充它的位置。
+
+#### 22.width:auto 和 width:100%的区别
+
+```text
+一般而言
+  width:100%会使元素box的宽度等于父元素的content box的宽度。
+  width:auto会使元素撑满整个父元素，margin、border、padding、content区域会自动分配水平空间。
+```
+
+#### 23.绝对定位元素与非绝对定位元素的百分比计算的区别
+
+绝对定位元素的宽高百分比是相对于临近的position不为static的祖先元素的padding box来计算的。
+非绝对定位元素的宽高百分比则是相对于父元素的content box来计算的。
+
+#### 24.简单介绍使用图片 base64 编码的优点和缺点。
+
+
+```text
+base64编码是一种图片处理格式，通过特定的算法将图片编码成一长串字符串，在页面上显示的时候，可以用该字符串来代替图片的
+url属性。
+
+使用base64的优点是：
+
+ 1. 减少一个图片的HTTP请求
+
+使用base64的缺点是：
+
+  1. 根据base64的编码原理，编码后的大小会比原文件大小大1/3，如果把大图片编码到html/css中，不仅会造成文件体
+  积的增加，影响文件的加载速度，还会增加浏览器对html或css文件解析渲染的时间。
+
+  2. 使用base64无法直接缓存，要缓存只能缓存包含base64的文件，比如HTML或者CSS，这相比于直接缓存图片的效果要
+  差很多。
+
+  3. 兼容性的问题，ie8以前的浏览器不支持。
+
+ 一般一些网站的小图标可以使用base64图片来引入。
+```
+
+详细资料可以参考：
+[《玩转图片 base64 编码》](https://www.cnblogs.com/coco1s/p/4375774.html)
+[《前端开发中，使用 base64 图片的弊端是什么？》](https://www.zhihu.com/question/31155574)
+[《小 tip:base64:URL 背景图片与 web 页面性能优化》](https://www.zhangxinxu.com/wordpress/2012/04/base64-url-image-%E5%9B%BE%E7%89%87-%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/)
+
+#### 25.'display'、'position'和'float'的相互关系？
+
+```
+（1）首先我们判断display属性是否为none，如果为none，则position和float属性的值不影响元素最后的表现。
+
+（2）然后判断position的值是否为absolute或者fixed，如果是，则float属性失效，并且display的值应该被
+设置为table或者block，具体转换需要看初始转换值。
+
+（3）如果position的值不为absolute或者fixed，则判断float属性的值是否为none，如果不是，则display
+的值则按上面的规则转换。注意，如果position的值为relative并且float属性的值存在，则relative相对
+于浮动后的最终位置定位。
+
+（4）如果float的值为none，则判断元素是否为根元素，如果是根元素则display属性按照上面的规则转换，如果不是，
+则保持指定的display属性值不变。
+
+总的来说，可以把它看作是一个类似优先级的机制，"position:absolute"和"position:fixed"优先级最高，有它存在
+的时候，浮动不起作用，'display'的值也需要调整；其次，元素的'float'特性的值不是"none"的时候或者它是根元素
+的时候，调整'display'的值；最后，非根元素，并且非浮动元素，并且非绝对定位的元素，'display'特性值同设置值。
+
+```
+
+详细资料可以参考：[《position 跟 display、margincollapse、overflow、float 这些特性相互叠加后会怎么样？》](https://www.cnblogs.com/jackyWHJ/p/3756087.html)
+
+#### 26.margin 重叠问题的理解。
+
+相关知识点：
+
+```
+块级元素的上外边距（margin-top）与下外边距（margin-bottom）有时会合并为单个外边距，这样的现象称为“margin合
+并”。
+
+产生折叠的必备条件：margin必须是邻接的!
+
+而根据w3c规范，两个margin是邻接的必须满足以下条件：
+
+•必须是处于常规文档流（非float和绝对定位）的块级盒子，并且处于同一个BFC当中。
+•没有线盒，没有空隙，没有padding和border将他们分隔开
+•都属于垂直方向上相邻的外边距，可以是下面任意一种情况
+•元素的margin-top与其第一个常规文档流的子元素的margin-top
+•元素的margin-bottom与其下一个常规文档流的兄弟元素的margin-top
+•height为auto的元素的margin-bottom与其最后一个常规文档流的子元素的margin-bottom
+•高度为0并且最小高度也为0，不包含常规文档流的子元素，并且自身没有建立新的BFC的元素的margin-top和margin-bottom
+
+margin合并的3种场景：
+
+（1）相邻兄弟元素margin合并。
+
+解决办法：
+•设置块状格式化上下文元素（BFC），即开启BFC
+
+（2）父级和第一个/最后一个子元素的margin合并。
+
+解决办法：
+
+对于margin-top合并，可以进行如下操作（满足一个条件即可）：
+•父元素设置为块状格式化上下文元素；即开启BFC
+•父元素设置border-top值；
+•父元素设置padding-top值；
+•父元素和第一个子元素之间添加内联元素进行分隔。
+
+对于margin-bottom合并，可以进行如下操作（满足一个条件即可）：
+•父元素设置为块状格式化上下文元素；
+•父元素设置border-bottom值；
+•父元素设置padding-bottom值；
+•父元素和最后一个子元素之间添加内联元素进行分隔；
+•父元素设置height、min-height或max-height。
+
+（3）空块级元素的margin合并。
+
+解决办法：
+•设置垂直方向的border；
+•设置垂直方向的padding；
+•里面添加内联元素（直接Space键空格是没用的）；
+•设置height或者min-height。
+```
+
+回答：
+
+```
+margin重叠指的是在垂直方向上，两个相邻元素的margin发生重叠的情况。
+
+一般来说可以分为四种情形：
+
+第一种是相邻兄弟元素的marin-bottom和margin-top的值发生重叠。这种情况下我们可以通过设置其中一个元素为BFC
+来解决。
+
+第二种是父元素的margin-top和子元素的margin-top发生重叠。它们发生重叠是因为它们是相邻的，所以我们可以通过这
+一点来解决这个问题。我们可以为父元素设置border-top、padding-top值来分隔它们，当然我们也可以将父元素设置为BFC
+来解决。
+
+第三种是高度为auto的父元素的margin-bottom和子元素的margin-bottom发生重叠。它们发生重叠一个是因为它们相
+邻，一个是因为父元素的高度不固定。因此我们可以为父元素设置border-bottom、padding-bottom来分隔它们，也可以为
+父元素设置一个高度，max-height和min-height也能解决这个问题。当然将父元素设置为BFC是最简单的方法。
+
+第四种情况，是没有内容的元素，自身的margin-top和margin-bottom发生的重叠。我们可以通过为其设置border、pa
+dding或者高度来解决这个问题。
+```
+
+#### 27.对 BFC 规范（块级格式化上下文：block formatting context）的理解？
+
+相关知识点：
+
+```
+块级格式化上下文（Block Formatting Context，BFC）是Web页面的可视化CSS渲染的一部分，是布局过程中生成块级盒
+子的区域，也是浮动元素与其他元素的交互限定区域。
+
+通俗来讲
+
+•BFC是一个独立的布局环境，可以理解为一个容器，在这个容器中按照一定规则进行物品摆放，并且不会影响其它环境中的物品。
+•如果一个元素符合触发BFC的条件，则BFC中的元素布局不受外部影响。
+
+创建BFC
+
+（1）根元素或包含根元素的元素
+（2）浮动元素float＝left|right或inherit（≠none）
+（3）绝对定位元素position＝absolute或fixed
+（4）display＝inline-block|flex|inline-flex|table-cell或table-caption
+（5）overflow＝hidden|auto或scroll(≠visible)
+
+```
+
+回答：
+
+```
+BFC指的是块级格式化上下文，一个元素开启了BFC之后，那么它内部元素产生的布局不会影响到外部元素，外部元素的布局也
+不会影响到BFC中的内部元素。一个BFC就像是一个隔离区域，和其他区域互不影响。
+
+一般来说根元素是一个BFC区域，浮动和绝对定位的元素也会形成BFC，display属性的值为inline-block、flex这些
+属性时也会创建BFC。还有就是元素的overflow的值不为visible时都会创建BFC。
+```
+
+详细资料可以参考：
+[《深入理解 BFC 和 MarginCollapse》](https://www.w3cplus.com/css/understanding-bfc-and-margin-collapse.html)
+[《前端面试题-BFC（块格式化上下文）》](https://segmentfault.com/a/1190000013647777)
+
+#### 28.IFC 是什么？
+
+```
+IFC指的是行级格式化上下文，它有这样的一些布局规则：
+
+（1）行级上下文内部的盒子会在水平方向，一个接一个地放置。
+（2）当一行不够的时候会自动切换到下一行。
+（3）行级上下文的高度由内部最高的内联盒子的高度决定。
+```
+
+详细资料可以参考：
+[《[译]:BFC 与 IFC》](https://segmentfault.com/a/1190000004466536#articleHeader5)
+[《BFC 和 IFC 的理解（布局）》](https://blog.csdn.net/paintandraw/article/details/80401741)
+
+#### 29.请解释一下为什么需要清除浮动？清除浮动的方式
+
+```
+浮动元素可以左右移动，直到遇到另一个浮动元素或者遇到它外边缘的包含框。浮动框不属于文档流中的普通流，当元素浮动之后，
+不会影响块级元素的布局，只会影响内联元素布局。此时文档流中的普通流就会表现得该浮动框不存在一样的布局模式。当包含框
+的高度小于浮动框的时候，此时就会出现“高度塌陷”。
+
+清除浮动是为了清除使用浮动元素产生的影响。浮动的元素，高度会塌陷，而高度的塌陷使我们页面后面的布局不能正常显示。
+
+清除浮动的方式
+
+（1）使用clear属性清除浮动。参考30。
+
+（2）使用BFC块级格式化上下文来清除浮动。参考26。
+
+因为BFC元素不会影响外部元素的特点，所以BFC元素也可以用来清除浮动的影响，因为如果不清除，子元素浮动则父元
+素高度塌陷，必然会影响后面元素布局和定位，这显然有违BFC元素的子元素不会影响外部元素的设定。
+```
+
+#### 30.使用 clear 属性清除浮动的原理？
+
+```
+使用clear属性清除浮动，其语法如下：clear:none|left|right|both
+
+如果单看字面意思，clear:left应该是“清除左浮动”，clear:right应该是“清除右浮动”的意思，实际上，这种解释是有问题的，因为浮动一直还在，并没有清除。
+
+官方对clear属性的解释是：“元素盒子的边不能和前面的浮动元素相邻。”，我们对元素设置clear属性是为了避免浮动元素对该元素的影响，而不是清除掉浮动。
+
+还需要注意的一点是clear属性指的是元素盒子的边不能和前面的浮动元素相邻，注意这里“前面的”3个字，也就是clear属性对“后面的”浮动元素是不闻不问的。考虑到float属性要么是left，要么是right，不可能同时存在，同时由于clear属性对“后面的”浮动元素不闻不问，因此，当clear:left有效的时候，clear:right必定无效，也就是此时clear:left等同于设置clear:both；同样地，clear:right如果有效也是等同于设置clear:both。由此可见，clear:left和clear:right这两个声明就没有任何使用的价值，至少在CSS世界中是如此，直接使用clear:both吧。
+
+一般使用伪元素的方式清除浮动
+.clear::before,  // 解决外边距重叠的问题
+.clear::after{   // 解决高度塌陷的问题
+  content:'';
+  display:table;//也可以是'block'，或者是'list-item'
+  clear:both;
+}
+
+clear属性只有块级元素才有效的，而::after等伪元素默认都是内联水平，这就是借助伪元素清除浮动影响时需要设置display属性值的原因。
+```
+
+#### 31.zoom:1 的清除浮动原理?
+
+```
+清除浮动，触发hasLayout；
+zoom属性是IE浏览器的专有属性，它可以设置或检索对象的缩放比例。解决ie下比较奇葩的bug。譬如外边距（margin）
+的重叠，浮动清除，触发ie的haslayout属性等。
+
+来龙去脉大概如下：
+当设置了zoom的值之后，所设置的元素就会扩大或者缩小，高度宽度就会重新计算了，这里一旦改变zoom值时其实也会发
+生重新渲染，运用这个原理，也就解决了ie下子元素浮动时候父元素不随着自动扩大的问题。
+
+zoom属性是IE浏览器的专有属性，火狐和老版本的webkit核心的浏览器都不支持这个属性。然而，zoom现在已经被逐步标
+准化，出现在CSS3.0规范草案中。
+
+目前非ie由于不支持这个属性，它们又是通过什么属性来实现元素的缩放呢？可以通过css3里面的动画属性scale进行缩放。
+```
+
+#### 32.移动端的布局用过媒体查询吗？
+
+&nbsp;&nbsp;假设你现在正用一台显示设备来阅读这篇文章，同时你也想把它投影到屏幕上，或者打印出来，而显示设备、屏幕投影和打印等这些媒介都有自己的特点，CSS就是为文档提供在不同媒介上展示的适配方法
+
+
+&nbsp;&nbsp;当媒体查询为真时，相关的样式表或样式规则会按照正常的级联规则被应用。当媒体查询返回假，标签上带有媒体查询的样式表仍将被下载（只不过不会被应用）。
+
+&nbsp;&nbsp;包含了一个媒体类型和至少一个使用宽度、高度和颜色等媒体属性来限制样式表范围的表达式。CSS3加入的媒体查询使得无需修改内容便可以使样式应用于某些特定的设备范围。
+
+详细资料可以参考：
+[《CSS3@media 查询》](http://www.runoob.com/cssref/css3-pr-mediaquery.html)
+[《响应式布局和自适应布局详解》](http://caibaojian.com/356.html)
+
+#### 33.使用 CSS 预处理器吗？喜欢哪个？
+
+```
+SASS（SASS、LESS没有本质区别，只因为团队前端都是用的SASS）
+```
+
+#### 34.CSS 优化、提高性能的方法有哪些？
+
+**加载性能：**
+  1. css压缩：将写好的css进行打包压缩，可以减少很多的体积。
+  2. css单一样式：当需要下边距和左边距的时候，很多时候选择`margin:top 0 bottom 0`但`margin-bottom:bottom;margin-left:left;`执行的效率更高。
+  3. 减少使用`@import`,而建议使用`link`，因为后者在页面加载时一起加载，前者是等待页面加载完成之后再进行加载。
+
+**选择器性能：**
+  1. 关键选择器（key selector）。选择器的最后面的部分为关键选择器（即用来匹配目标元素的部分）。CSS选择器是从右到左进行匹配的。当使用后代选择器的时候，浏览器会遍历所有子元素来确定是否是指定的元素等等；
+  2. 如果规则拥有ID选择器作为其关键选择器，则不要为规则增加标签。过滤掉无关的规则（这样样式系统就不会浪费时间去匹配它们了）。
+  3. 避免使用通配规则，如*{}计算次数惊人！只对需要用到的元素进行选择。
+  4. 尽量少的去对标签进行选择，而是用class。
+  5. 尽量少的去使用后代选择器，降低选择器的权重值。后代选择器的开销是最高的，尽量将选择器的深度降到最低，最高不要超过三层，更多的使用类来关联每一个标签元素。
+  6. 了解哪些属性是可以通过继承而来的，然后避免对这些属性重复指定规则。
+
+**渲染性能：**
+  1. 慎重使用高性能属性：浮动、定位。
+  2. 尽量减少页面重排、重绘。
+  3. 去除空规则：｛｝。空规则的产生原因一般来说是为了预留样式。去除这些空规则无疑能减少css文档体积。
+  4. 属性值为0时，不加单位。
+  5. 属性值为浮动小数0.**，可以省略小数点之前的0。
+  6. 标准化各种浏览器前缀：带浏览器前缀的在前。标准属性在后。
+  7. 不使用@import前缀，它会影响css的加载速度。
+  8. 选择器优化嵌套，尽量避免层级过深。
+  9. css雪碧图，同一页面相近部分的小图标，方便使用，减少页面的请求次数，但是同时图片本身会变大，使用时，优劣考虑清楚，再使用。
+  10. 正确使用display的属性，由于display的作用，某些样式组合会无效，徒增样式体积的同时也影响解析性能。
+  11. 不滥用web字体。对于中文网站来说WebFonts可能很陌生，国外却很流行。web fonts通常体积庞大，而且一些浏
+览器在下载web fonts时会阻塞页面渲染损伤性能。
+
+**可维护性、健壮性：**
+  1. 将具有相同属性的样式抽离出来，整合并通过class在页面中进行使用，提高css的可维护性。
+  2. 样式与内容分离：将css代码定义到外部css中。
+
+详细资料可以参考：
+[《CSS 优化、提高性能的方法有哪些？》](https://www.zhihu.com/question/19886806)
+[《CSS 优化，提高性能的方法》](https://www.jianshu.com/p/4e673bf24a3b)
+
+#### 35.浏览器是怎样解析 CSS 选择器的？
+
+```
+样式系统从关键选择器开始匹配，然后左移查找规则选择器的祖先元素。只要选择器的子树一直在工作，样式系统就会持续左移，直
+到和规则匹配，或者是因为不匹配而放弃该规则。
+
+试想一下，如果采用从左至右的方式读取CSS规则，那么大多数规则读到最后（最右）才会发现是不匹配的，这样做会费时耗能，
+最后有很多都是无用的；而如果采取从右向左的方式，那么只要发现最右边选择器不匹配，就可以直接舍弃了，避免了许多无效匹配。
+```
+
+详细资料可以参考：[《探究 CSS 解析原理》](https://juejin.im/entry/5a123c55f265da432240cc90)
+
+#### 36.在网页中应该使用奇数还是偶数的字体？为什么呢？
+
+1. 偶数字号相对更容易和web设计的其他部分构成比例关系。比如：当我用了14px的正文字号，我可能会在一些地方用14×0.5=7px的margin，在另一些地方用14×1.5=21px的标题字号。
+2. 浏览器缘故，低版本的浏览器ie6会把奇数字体强制转化为偶数，即13px渲染为14px。
+3. 系统差别，早期的Windows里，中易宋体点阵只有12和14、15、16px，唯独缺少13px。
+
+详细资料可以参考：
+[《谈谈网页中使用奇数字体和偶数字体》](https://blog.csdn.net/jian_xi/article/details/79346477)
+[《现在网页设计中的为什么少有人用 11px、13px、15px 等奇数的字体？》](https://www.zhihu.com/question/20440679)
+
+#### 37.margin 和 padding 分别适合什么场景使用？
+
+margin是用来隔开元素与元素的间距；padding是用来隔开元素与内容的间隔。
+margin用于布局分开元素使元素与元素互不相干。
+padding用于元素与内容之间的间隔，让内容（文字）与（包裹）元素之间有一段距离。
+
+何时应当使用margin：
+ - 需要在border外侧添加空白时。
+ - 空白处不需要背景（色）时。
+ - 上下相连的两个盒子之间的空白，需要相互抵消时。如15px+20px的margin，将得到20px的空白。
+
+何时应当时用padding：
+ - 需要在border内测添加空白时。
+ - 空白处需要背景（色）时。
+ - 上下相连的两个盒子之间的空白，不需要相互抵消时。如15px+20px的margin，将得到35px的空白。
+
+#### 38.抽离样式模块怎么写，说出思路，有无实践经验？[阿里航旅的面试题]
+
+&nbsp;&nbsp;**我的理解是把常用的css样式单独做成css文件……通用的和业务相关的分离出来，通用的做成样式模块儿共享，业务相关的，放进业务相关的库里面做成对应功能的模块儿。**
+
+详细资料可以参考：[《CSS 规范-分类方法》](http://nec.netease.com/standard/css-sort.html)
+
+#### 39.简单说一下 css3 的 all 属性。
+
+&nbsp;&nbsp;all属性实际上是所有CSS属性的缩写，表示，所有的CSS属性都怎样怎样，但是，不包括unicode-bidi和direction这两个CSS属性。支持三个CSS通用属性值，initial,inherit,unset。
+
+**initial:** initial是初始值的意思，也就是该元素除了`unicode-bidi`和`direction`以外的CSS属性都使用属性的默认初始值。
+
+**inherit:** inherit是继承的意思，也就是该元素除了`unicode-bidi`和`direction`以外的CSS属性都继承父元素的属性值。
+
+**unset:** unset是取消设置的意思，也就是当前元素浏览器或用户设置的CSS忽略，然后如果是具有继承特性的CSS，如`color`，则使用继承值；如果是没有继承特性的CSS属性，如`background-color`，则使用初始值。
+
+详细资料可以参考：[《简单了解 CSS3 的 all 属性》](https://www.zhangxinxu.com/wordpress/2016/03/know-about-css3-all/)
+
+#### 40.为什么不建议使用统配符初始化 css 样式。
+
+&nbsp;&nbsp;采用`*{padding:0;margin:0;}`这样的写法好处是写起来很简单，但是是通配符，需要把所有的标签都遍历一遍，当网站较大时，样式比较多，这样写就大大的加强了网站运行的负载，会使网站加载的时候需要很长一段时间，因此一般大型的网站都有分层次的一套初始化样式。
+
+&nbsp;&nbsp;出于性能的考虑，并不是所有标签都会有`padding`和`margin`，因此对常见的具有默认`padding`和`margin`的元素初始化即可，并不需使用通配符*来初始化。
+
+#### 41.absolute 的 containingblock（包含块）计算方式跟正常流有什么不同？
+
+- 内联元素也可以作为“包含块”所在的元素；
+- “包含块”所在的元素不是父块级元素，而是最近的position不为static的祖先元素或根元素；
+- 边界是padding box而不是content box。
+
+#### 42.对于 hasLayout 的理解？
+
+&nbsp;&nbsp;hasLayout是IE特有的一个属性。很多的IE下的css bug都与其息息相关。在IE中，一个元素要么自己对自身的内容进行计算大小和组织，要么依赖于父元素来计算尺寸和组织内容。当一个元素的hasLayout属性值为true时，它负责对自己和可能的子孙元素进行尺寸计算和定位。虽然这意味着这个元素需要花更多的代价来维护自身和里面的内容，而不是依赖于祖先元素来完成这些工作。
+
+详细资料可以参考：
+[《CSS 基础篇--CSS 中 IE 浏览器的 hasLayout，IE 低版本的 bug 根源》](https://segmentfault.com/a/1190000010883974)
+[《CSS 魔法堂：hasLayout 原来是这样的！》](https://segmentfault.com/a/1190000004632071)
+
+
+#### 43.元素竖向的百分比设定是相对于容器的高度吗？
+
+**如果是height的话，是相对于包含块的高度。**
+**如果是padding或者margin竖直方向的属性则是相对于包含块的宽度。**
+
+#### 44.全屏滚动的原理是什么？用到了 CSS 的哪些属性？（待深入实践）
+
+&nbsp;&nbsp;**原理：** 有点类似于轮播，整体的元素一直排列下去，假设有5个需要展示的全屏页面，那么高度是500%，只是展示100%，容器及容器内的页面取当前可视区高度，同时容器的父级元素overflow属性值设为hidden，通过更改容器可视区的位置来实现全屏滚动效果。主要是响应鼠标事件，页面通过CSS的动画效果，进行移动。
+`overflow：hidden；transition：all 1000ms ease；`
+
+详细资料可以参考：
+[《js 实现网页全屏切换（平滑过渡），鼠标滚动切换》](https://blog.csdn.net/liona_koukou/article/details/52680409)
+[《用 ES6 写全屏滚动插件》](https://juejin.im/post/5aeef41cf265da0ba0630de0)
+
+#### 45.什么是响应式设计？响应式设计的基本原理是什么？如何兼容低版本的 IE？（待深入了解）
+
+&nbsp;&nbsp;响应式网站设计是一个网站能够兼容多个终端，而不是为每一个终端做一个特定的版本。基本原理是通过媒体查询检测不同的设备屏幕尺寸做处理。页面头部必须有meta声明的viewport。
+
+详细资料可以参考：
+[《响应式布局原理》](https://blog.csdn.net/dreamerframework/article/details/8994741)
+[《响应式布局的实现方法和原理》](http://www.mahaixiang.cn/wzsj/278.html)
+
+#### 46.视差滚动效果，如何给每页做不同的动画？（回到顶部，向下滑动要再次出现，和只出现一次分别怎么做？）
+
+&nbsp;&nbsp;视差滚动是指多层背景以不同的速度移动，形成立体的运动效果，带来非常出色的视觉体验。
+
+详细资料可以参考：
+[《如何实现视差滚动效果的网页？》](https://www.zhihu.com/question/20990029)
+
+#### 47.如何修改 chrome 记住密码后自动填充表单的黄色背景？
+
+&nbsp;&nbsp;chrome表单自动填充后，input文本框的背景会变成黄色的，通过审查元素可以看到这是由于chrome会默认给自动填充的input表单加上input:-webkit-autofill私有属性，然后对其赋予以下样式：
+```css
+{
+  background-color:rgb(250,255,189)!important;
+  background-image:none!important;
+  color:rgb(0,0,0)!important;
+}
+/*对chrome默认定义的background-color，background-image，color使用important是不能提高其优先级的，但是其他属性可使用。*/
+```
+
+&nbsp;&nbsp;使用足够大的纯色内阴影来覆盖input输入框的黄色背景，处理如下
+```css
+input:-webkit-autofill,textarea:-webkit-autofill,select:-webkit-autofill {
+  -webkit-box-shadow:000px 1000px white inset;
+  border:1px solid #CCC !important;
+}
+```
+
+详细资料可以参考：
+[《去掉 chrome 记住密码后的默认填充样式》](https://blog.csdn.net/zsl_955200/article/details/78276209)
+[《修改谷歌浏览器 chrome 记住密码后自动填充表单的黄色背景》](https://blog.csdn.net/M_agician/article/details/73381706)
+
+#### 48.怎么让 Chrome 支持小于 12px 的文字？
+
+&nbsp;&nbsp;在谷歌下css设置字体大小为12px及以下时，显示都是一样大小，都是默认12px。
+
+解决办法：
+  1. 可以使用Webkit的内核的`-webkit-text-size-adjust`的私有CSS属性来解决，只要加了`-webkit-text-size-adjust:none;`字体大小就不受限制了。但是chrome更新到27版本之后就不可以用了。所以高版本chrome谷歌浏览器已经不再支持`-webkit-text-size-adjust`样式，所以要使用时候慎用。
+  2. 还可以使用css3的`transform`缩放属性`-webkit-transform:scale(0.5);`注意`-webkit-transform:scale(0.75);`收缩的是整个元素的大小，这时候，如果是内联元素，必须要将内联元素转换成块元素，可以使用`display：block/inline-block/...；`
+  3. 使用图片：如果是内容固定不变情况下，使用将小于12px文字内容切出做图片，这样不影响兼容也不影响美观。
+
+详细资料可以参考：[《谷歌浏览器不支持 CSS 设置小于 12px 的文字怎么办？》](https://570109268.iteye.com/blog/2406562)
+
+#### 49.让页面里的字体变清晰，变细用 CSS 怎么做？
+
+&nbsp;&nbsp;webkit内核的私有属性`：-webkit-font-smoothing`，用于字体抗锯齿，使用后字体看起来会更清晰舒服。
+&nbsp;&nbsp;在MacOS测试环境下面设置`-webkit-font-smoothing:antialiased;`但是这个属性仅仅是面向MacOS，其他操作系统设置后无效。
+
+详细资料可以参考：[《让字体变的更清晰 CSS 中-webkit-font-smoothing》](https://blog.csdn.net/huo_bao/article/details/50251585)
+
+#### 50.font-style 属性中 italic 和 oblique 的区别？
+
+&nbsp;&nbsp;`italic`和`oblique`这两个关键字都表示“斜体”的意思。
+&nbsp;&nbsp;它们的区别在于，`italic`是使用当前字体的斜体字体，而`oblique`只是单纯地让文字倾斜。如果当前字体没有对应的斜体字体，
+则退而求其次，解析为`oblique`，也就是单纯形状倾斜。
+
+#### 51.设备像素、css 像素、设备独立像素、dpr、ppi 之间的区别？
+
+&nbsp;&nbsp;设备像素指的是物理像素，一般手机的分辨率指的就是设备像素，一个设备的设备像素是不可变的。
+
+&nbsp;&nbsp;css像素和设备独立像素是等价的，不管在何种分辨率的设备上，css像素的大小应该是一致的，css像素是一个相对单位，它是相对于设备像素的，一个css像素的大小取决于页面缩放程度和dpr的大小。
+
+&nbsp;&nbsp;dpr指的是设备像素和设备独立像素的比值，一般的pc屏幕，dpr=1。在iphone4时，苹果推出了retina屏幕，它的dpr为2。屏幕的缩放会改变dpr的值。
+
+&nbsp;&nbsp;ppi指的是每英寸的物理像素的密度，ppi越大，屏幕的分辨率越大。
+
+详细资料可以参考：
+[《什么是物理像素、虚拟像素、逻辑像素、设备像素，什么又是 PPI,DPI,DPR 和 DIP》](https://www.cnblogs.com/libin-1/p/7148377.html)
+[《前端工程师需要明白的「像素」》](https://www.jianshu.com/p/af6dad66e49a)
+[《CSS 像素、物理像素、逻辑像素、设备像素比、PPI、Viewport》](https://github.com/jawil/blog/issues/21)
+[《前端开发中像素的概念》](https://github.com/wujunchuan/wujunchuan.github.io/issues/15)
+
+#### 52.layout viewport、visual viewport 和 ideal viewport 的区别？
+
+**相关知识点：**
+  - 如果把移动设备上浏览器的可视区域设为viewport的话，某些网站就会因为viewport太窄而显示错乱，所以这些浏览器就决定默认情况下把`viewport`设为一个较宽的值，比如980px，这样的话即使是那些为桌面设计的网站也能在移动浏览器上正常显示了。ppk把这个浏览器默认的`viewport`叫做`layout viewport`。
+  - `layout viewport`的宽度是大于浏览器可视区域的宽度的，所以我们还需要一个`viewport`来代表浏览器可视区域的大小，ppk把这个`viewport`叫做`visual viewport`。
+  - `ideal viewport`是最适合移动设备的`viewport，ideal viewport`的宽度等于移动设备的屏幕宽度，只要在css中把某一元素的宽度设为`ideal viewport`的宽度（单位用px），那么这个元素的宽度就是设备屏幕的宽度了，也就是宽度为100%的效果。`ideal viewport`的意义在于，无论在何种分辨率的屏幕下，那些针对`ideal viewport`而设计的网站，不需要用户手动缩放，也不需要出现横向滚动条，都可以完美的呈现给用户。
+
+**回答：**
+  - 移动端一共需要理解三个viewport的概念的理解。
+  - 第一个视口是布局视口，在移动端显示网页时，由于移动端的屏幕尺寸比较小，如果网页使用移动端的屏幕尺寸进行布局的话，那么整个页面的布局都会显示错乱。所以移动端浏览器提供了一个`layout viewport`布局视口的概念，使用这个视口来对页面进行布局展示，一般`layout viewport`的大小为980px，因此页面布局不会有太大的变化，我们可以通过拖动和缩放来查看到这个页面。
+  - 第二个视口指的是视觉视口，`visual viewport`指的是移动设备上我们可见的区域的视口大小，一般为屏幕的分辨率的大小。`visual viewport`和`layout viewport`的关系，就像是我们通过窗户看外面的风景，视觉视口就是窗户，而外面的风景就是布局视口中的网页内容。
+  - 第三个视口是理想视口，由于`layout viewport`一般比`visual viewport`要大，所以想要看到整个页面必须通过拖动和缩放才能实现。所以又提出了`ideal viewport`的概念，`ideal viewport`下用户不用缩放和滚动条就能够查看到整个页面，并且页面在不同分辨率下显示的内容大小相同。`ideal viewport`其实就是通过修改`layout viewport`的大小，让它等于设备的宽度，这个宽度可以理解为是设备独立像素，因此根据`ideal viewport`设计的页面，在不同分辨率的屏幕下，显示应该相同。
+
+详细资料可以参考：
+  [《移动前端开发之 viewport 的深入理解》](https://www.cnblogs.com/2050/p/3877280.html)
+  [《说说移动前端中 viewport（视口）》](https://www.html.cn/archives/5975)
+  [《移动端适配知识你到底知多少》](https://juejin.im/post/5b6d21daf265da0f9d1a2ed7#heading-14)
+
+#### 53.position:fixed;在 android 下无效怎么处理？
+
+&nbsp;&nbsp;因为移动端浏览器默认的viewport叫做layout viewport。在移动端显示时，因为layout viewport的宽度大于移动端屏幕的宽度，所以页面会出现滚动条左右移动，fixed的元素是相对layout viewport来固定位置的，而不是移动端屏幕来固定位置的，所以会出现感觉fixed无效的情况。
+
+&nbsp;&nbsp;如果想实现fixed相对于屏幕的固定效果，我们需要改变的是viewport的大小为ideal viewport，可以如下设置：
+&nbsp;&nbsp;<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"/>
+
+#### 54.如果需要手动写动画，你认为最小时间间隔是多久，为什么？（阿里）
+
+&nbsp;&nbsp;多数显示器默认频率是60Hz，即1秒刷新60次，所以理论上最小间隔为1/60*1000ms＝16.7ms
+
+
+#### 55.如何去除 inline-block 元素间间距？
+
+&nbsp;&nbsp;移除空格、使用`margin负值`、`使用font-size:0`、`letter-spacing`、`word-spacing`
+
+详细资料可以参考：[《去除 inline-block 元素间间距的 N 种方法》](https://www.zhangxinxu.com/wordpress/2012/04/inline-block-space-remove-%E5%8E%BB%E9%99%A4%E9%97%B4%E8%B7%9D/)
+
+#### 56.overflow:scroll 时不能平滑滚动的问题怎么处理？
+
+&nbsp;&nbsp;以下代码可解决这种卡顿的问题`-webkit-overflow-scrolling:touch;`是因为这行代码启用了硬件加速特性，所以滑动很流畅。
+
+详细资料可以参考：[《解决页面使用 overflow:scroll 在 iOS 上滑动卡顿的问题》](https://www.jianshu.com/p/1f4693d0ad2d)
+
+#### 57.有一个高度自适应的 div，里面有两个 div，一个高度 100px，希望另一个填满剩下的高度。
+
+1. 外层`div`使用`position：relative；`高度要求自适应的div使用`position:absolute;top:100px;bottom:0;left:0;right:0;`
+2. 使用`flex`布局，设置主轴为竖轴，第二个div的`flex-grow`为1。
+
+详细资料可以参考：[《有一个高度自适应的 div，里面有两个 div，一个高度 100px，希望另一个填满剩下的高度(三种方案)》](https://blog.csdn.net/xutongbao/article/details/79408522)
+
+#### 58.png、jpg、gif 这些图片格式解释一下，分别什么时候用。有没有了解过 webp？
+
+**相关知识点：**
+1. `BMP`，是无损的、既支持索引色也支持直接色的、点阵图。这种图片格式几乎没有对数据进行压缩，所以`BMP`格式的图片通常具有较大的文件大小。
+2. `GIF`是无损的、采用索引色的、点阵图。采用LZW压缩算法进行编码。文件小，是`GIF`格式的优点，同时，GIF格式还具有支持动画以及透明的优点。但`GIF`格式仅支持8bit的索引色，所以`GIF`格式适用于对色彩要求不高同时需要文件体积较小的场景。
+3. `JPEG`是有损的、采用直接色的、点阵图。`JPEG`的图片的优点，是采用了直接色，得益于更丰富的色彩，`JPEG`非常适合用来
+存储照片，与`GIF`相比，`JPEG`不适合用来存储企业Logo、线框类的图。因为有损压缩会导致图片模糊，而直接色的选用，
+又会导致图片文件较`GIF`更大。
+4. `PNG-8`是无损的、使用索引色的、点阵图。`PNG是`一种比较新的图片格式，`PNG-8`是非常好的`GIF`格式替代者，在可能的情况下，应该尽可能的使用`PNG-8`而不是`GIF`，因为在相同的图片效果下，`PNG-8`具有更小的文件体积。除此之外，`PNG-8`还支持透明度的调节，而`GIF`并不支持。现在，除非需要动画的支持，否则我们没有理由使用`GIF`而不是`PNG-8`。
+5. `PNG-24`是无损的、使用直接色的、点阵图。`PNG-24`的优点在于，它压缩了图片的数据，使得同样效果的图片，`PNG-24`格
+式的文件大小要比`BMP`小得多。当然，`PNG24`的图片还是要比`JPEG、GIF、PNG-8`大得多。
+6. `SVG`是无损的、矢量图。`SVG`是矢量图。这意味着`SVG`图片由直线和曲线以及绘制它们的方法组成。当你放大一个`SVG`图片的时候，你看到的还是线和曲线，而不会出现像素点。这意味着`SVG`图片在放大时，不会失真，所以它非常适合用来绘制企业`Logo、Icon`等。
+7. `WebP`是谷歌开发的一种新图片格式，`WebP`是同时支持有损和无损压缩的、使用直接色的、点阵图。从名字就可以看出来它是为`Web`而生的，什么叫为`Web`而生呢？就是说相同质量的图片，`WebP`具有更小的文件体积。现在网站上充满了大量的图片，如果能够降低每一个图片的文件大小，那么将大大减少浏览器和服务器之间的数据传输量，进而降低访问延迟，提升访问体验。
+ - 在无损压缩的情况下，相同质量的WebP图片，文件大小要比PNG小26%；
+ - 在有损压缩的情况下，具有相同图片精度的WebP图片，文件大小要比JPEG小25%~34%；
+ - WebP图片格式支持图片透明度，一个无损压缩的WebP图片，如果要支持透明度只需要22%的格外文件大小。
+
+&nbsp;&nbsp;但是目前只有Chrome浏览器和Opera浏览器支持WebP格式，兼容性不太好。
+
+**回答：**
+1. jpeg(jpg)：支持的颜色比较丰富，不支持透明效果，不支持动图。一般用来显示照片。
+2. gif：支持的颜色比较少，支持简单透明，支持动图。适用颜色单一的图片、动图。
+3. png：支持的颜色丰富，支持复杂透明，不支持动图。专为网页而生。
+4. webp：这种格式是谷歌推出的专门用来表示网页中的图片的一种格式。
+    使用webp格式的最大的优点是，在相同质量的文件下，它拥有更小的文件体积。因此它非常适合于网络图片的传输，
+    因为图片体积的减少，意味着请求时间的减小，这样会提高用户的体验。
+    缺点是目前在兼容性上不太好。
+    选取图片规则：效果一样用小的，效果不一样用效果好的。
+
+详细资料可以参考：[《图片格式那么多，哪种更适合你？》](https://www.cnblogs.com/xinzhao/p/5130410.html)
+
+#### 59.浏览器如何判断是否支持 webp 格式图片
+
+1. 宽高判断法。通过创建image对象，将其src属性设置为webp格式的图片，然后在onload事件中获取图片的宽高，如果能够获取，则说明浏览器支持webp格式图片。如果不能获取或者触发了onerror函数，那么就说明浏览器不支持webp格式的图片。
+
+2. canvas判断方法。我们可以动态的创建一个canvas对象，通过canvas的toDataURL将设置为webp格式，然后判断返回值中是否含有image/webp字段，如果包含则说明支持WebP，反之则不支持。
+
+详细资料可以参考：
+[《判断浏览器是否支持 WebP 图片》](https://blog.csdn.net/jesslu/article/details/82495061)
+[《toDataURL()》](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toDataURL)
+
+#### 60.什么是 Cookie 隔离？（或者说：请求资源的时候不要让它带 cookie 怎么做）
+
+&nbsp;&nbsp;网站向服务器请求的时候，会自动带上`cookie`，这样增加表头信息量，使请求变慢。
+
+&nbsp;&nbsp;如果静态文件都放在主域名下，那静态文件请求的时候都带有的`cookie`的数据提交给`server`的，非常浪费流量，所以不如隔离开，静态资源放CDN。
+
+&nbsp;&nbsp;因为`cookie`有域的限制，因此不能跨域提交请求，故使用非主域名的时候，请求头中就不会带有`cookie`数据，这样可以降低请求头的大小，降低请求时间，从而达到降低整体请求延时的目的。
+
+&nbsp;&nbsp;同时这种方式不会将`cookie`传入`WebServer`，也减少了`WebServer`对`cookie`的处理分析环节，提高了`webserver`的http请求的解析速度。
+
+详细资料可以参考：[《CDN 是什么？使用 CDN 有什么优势？》](https://www.zhihu.com/question/36514327?rf=37353035)
+
+#### 61.style 标签写在 body 后与 body 前有什么区别？
+
+&nbsp;&nbsp;页面加载自上而下当然是先加载样式。写在body标签后由于浏览器以逐行方式对HTML文档进行解析，当解析到写在尾部的样式表（外联或写在style标签）会导致浏览器停止之前的渲染，等待加载且解析样式表完成之后重新渲染，在windows的IE下可能会出现FOUC现象(即样式失效导致的页面闪烁问题(结构解析完但样式还没有解析完))
+
+#### 62.什么是 CSS 预处理器/后处理器？
+
+&nbsp;&nbsp;`CSS`预处理器定义了一种新的语言，其基本思想是，用一种专门的编程语言，为`CSS`增加了一些编程的特性，将`CSS`作为目标生成文件，然后开发者就只要使用这种语言进行编码工作。通俗的说，`CSS`预处理器用一种专门的编程语言，进行Web页面样式设计，然后再编译成正常的`CSS`文件。
+
+&nbsp;&nbsp;预处理器例如：`LESS、Sass、Stylus`，用来预编译`Sass`或`less` ，增强了`css`代码的复用性，还有`层级、mixin、变量、循环、函数`等，具有很方便的UI组件模块化开发能力，极大的提高工作效率。
+
+&nbsp;&nbsp;`CSS`后处理器是对`CSS`进行处理，并最终生成`CSS`的预处理器，它属于广义上的`CSS`预处理器。我们很久以前就在用`CSS`后处理器了，最典型的例子是`CSS`压缩工具（如`clean-css`），只不过以前没单独拿出来说过。还有最近比较火的`Autoprefixer`，以`CanIUse`上的浏览器支持数据为基础，自动处理兼容性问题。
+
+&nbsp;&nbsp;后处理器例如：`PostCSS`，通常被视为在完成的样式表中根据`CSS`规范处理`CSS`，让其更有效；目前最常做的是给`CSS`属性添加浏览器私有前缀，实现跨浏览器兼容性的问题。
+
+详细资料可以参考：[《CSS 预处理器和后处理器》](https://blog.csdn.net/yushuangyushuang/article/details/79209752)

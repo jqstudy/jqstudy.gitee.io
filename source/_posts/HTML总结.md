@@ -1,5 +1,5 @@
 ---
-title: HTML面试总结
+title: HTML总结
 date: 2023-11-16 20:05:44
 tags:
 categories: web前端
