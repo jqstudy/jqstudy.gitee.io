@@ -1,8 +1,8 @@
 ---
 title: JavaScript总结
 date: 2024-05-09 10:43:41
-tags: [JavaScript, ES6, 动态语言特性, 现代Web开发]
-categories: web前端
+tags: [JavaScript, ES6]
+categories: JavaScript
 ---
 
 #### 1. 介绍 js 的基本数据类型。

@@ -1,8 +1,8 @@
 ---
 title: Vue2组件通信方式
 date: 2023-09-14 13:49:45
-tags:
-categories: web前端
+tags: Vue2
+categories: Vue
 ---
 
 ### 1. 通过 props 和 $emit 实现父子组件的传参

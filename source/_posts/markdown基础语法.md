@@ -1,8 +1,8 @@
 ---
 title: markdown基础语法
 date: 2023-09-12 20:29:22
-tags:
-categories: web前端
+tags: Markdown
+categories: 了解Hexo
 ---
 
 之前写文章做记录都是直接码字，码字虽然方便，但是遇到代码部分就很dan疼，尤其是代码格式化很麻烦，开始用markdown之后就觉得特别方便，简单记录下基础语法。

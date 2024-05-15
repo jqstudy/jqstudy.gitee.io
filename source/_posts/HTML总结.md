@@ -1,8 +1,8 @@
 ---
 title: HTML总结
 date: 2023-11-16 20:05:44
-tags:
-categories: web前端
+tags: HTML
+categories: HTML总结
 ---
 
 ### HTML 面试知识点总结

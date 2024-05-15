@@ -1,8 +1,8 @@
 ---
 title: CSS总结
 date: 2023-12-18 21:44:00
-tags:
-categories: web前端
+tags: CSS
+categories: CSS总结
 ---
 
 #### 1. 介绍一下标准的 CSS 的盒子模型？低版本 IE 的盒子模型有什么不同的？
