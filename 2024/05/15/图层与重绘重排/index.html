@@ -1,0 +1,739 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="jqstudy">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="css图层​	浏览器在渲染一个页面时，会将页面分为很多个图层，图层有大有小，每个图层上有一个或多个节点。​	在渲染DOM的时候，浏览器所做的工作实际上是：  获取DOM后分割为多个图层  对每个图层的节点计算样式结果		（Recalculate style–样式重计算）  为每个节点生成图形和位置			（Layout–布局，重排,回流）  将每个节点绘制填充到图层位图中		（Paint–重绘）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图层与重绘重排">
+<meta property="og:url" content="http://example.com/2024/05/15/%E5%9B%BE%E5%B1%82%E4%B8%8E%E9%87%8D%E7%BB%98%E9%87%8D%E6%8E%92/index.html">
+<meta property="og:site_name" content="悠闲博客">
+<meta property="og:description" content="css图层​	浏览器在渲染一个页面时，会将页面分为很多个图层，图层有大有小，每个图层上有一个或多个节点。​	在渲染DOM的时候，浏览器所做的工作实际上是：  获取DOM后分割为多个图层  对每个图层的节点计算样式结果		（Recalculate style–样式重计算）  为每个节点生成图形和位置			（Layout–布局，重排,回流）  将每个节点绘制填充到图层位图中		（Paint–重绘）">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-05-15T08:43:30.000Z">
+<meta property="article:modified_time" content="2024-05-15T08:43:30.000Z">
+<meta property="article:author" content="jqstudy">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>图层与重绘重排 - 悠闲博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>悠闲博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>文档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>文章</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="图层与重绘重排"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-15 16:43" pubdate>
+          May 15, 2024 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.2k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          27 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">图层与重绘重排</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="css图层"><a href="#css图层" class="headerlink" title="css图层"></a>css图层</h3><p>​	浏览器在渲染一个页面时，会将页面分为很多个图层，图层有大有小，每个图层上有一个或多个节点。<br>​	在渲染DOM的时候，浏览器所做的工作实际上是：</p>
+<ol>
+<li><p>获取DOM后分割为多个图层</p>
+</li>
+<li><p>对每个图层的节点计算样式结果		（Recalculate style–样式重计算）</p>
+</li>
+<li><p>为每个节点生成图形和位置			（Layout–布局，重排,回流）</p>
+</li>
+<li><p>将每个节点绘制填充到图层位图中		（Paint–重绘）</p>
+</li>
+<li><p>图层作为纹理上传至GPU</p>
+</li>
+<li><p>组合多个图层到页面上生成最终屏幕图像	（Composite Layers–图层重组）</p>
+</li>
+</ol>
+<h3 id="图层创建的条件"><a href="#图层创建的条件" class="headerlink" title="图层创建的条件"></a>图层创建的条件</h3><p>​<strong>Chrome浏览器满足以下任意情况就会创建图层：</strong></p>
+<ol>
+<li><p>拥有具有3D变换的CSS属性</p>
+</li>
+<li><p>使用加速视频解码的<video>节点</p>
+</li>
+<li><p><canvas>节点</p>
+</li>
+<li><p>CSS3动画的节点</p>
+</li>
+<li><p>拥有CSS加速属性的元素(will-change)</p>
+</li>
+</ol>
+<h3 id="重绘-Repaint"><a href="#重绘-Repaint" class="headerlink" title="重绘(Repaint)"></a>重绘(Repaint)</h3><p>&nbsp;&nbsp;​重绘是一个元素外观的改变所触发的浏览器行为，例如改变outline、背景色等属性。浏览器会根据元素的新属性重新绘制，使元素呈现新的外观。重绘不会带来重新布局，所以并不一定伴随重排。	</p>
+<p>&nbsp;&nbsp;​需要注意的是：重绘重排都是以图层为单位，如果图层中某个元素需要重绘，那么整个图层都需要重绘。​所以为了提高性能，我们应该让这些“变化的东西”拥有一个自己一个图层，不过好在绝大多数的浏览器自己会为CSS3动画的节点自动创建图层。</p>
+<h3 id="重排-Reflow-又称：回流"><a href="#重排-Reflow-又称：回流" class="headerlink" title="重排(Reflow 又称：回流)"></a>重排(Reflow 又称：回流)</h3><p>​渲染对象在创建完成并添加到渲染树时，并不包含位置和大小信息。计算这些值的过程称为布局或重排(回流)。</p>
+<p>“重绘”不一定需要”重排”，比如改变某个网页元素的颜色，就只会触发”重绘”，不会触发”重排”，因为布局没有改变。<br>“重排”大多数情况下会导致”重绘”，比如改变一个网页元素的位置，就会同时触发”重排”和”重绘”，因为布局改变了。</p>
+<h3 id="触发重绘的属性"><a href="#触发重绘的属性" class="headerlink" title="触发重绘的属性"></a>触发重绘的属性</h3><ul>
+<li>color							 * background								* outline-color</li>
+<li>border-style				* background-image					* outline</li>
+<li>border-radius			 * background-position				 * outline-style</li>
+<li>visibility					   * background-repeat					* outline-width</li>
+<li>text-decoration		  * background-size						 * box-shadow</li>
+</ul>
+<h3 id="触发重排-回流-的属性"><a href="#触发重排-回流-的属性" class="headerlink" title="触发重排(回流)的属性"></a>触发重排(回流)的属性</h3><ul>
+<li>width						* top									* text-align</li>
+<li>height					  * bottom							 * overflow-y</li>
+<li>padding				  * left									 * font-weight</li>
+<li>margin					* right								  * overflow</li>
+<li>display					* position							* font-family</li>
+<li>border-width		 * float								  * line-height</li>
+<li>border					* clear								  * vertival-align</li>
+<li>min-height														   * white-space</li>
+</ul>
+<h3 id="常见的触发重排的操作"><a href="#常见的触发重排的操作" class="headerlink" title="常见的触发重排的操作"></a>常见的触发重排的操作</h3><p>​	Reflow(重排) 的成本比 Repaint(重绘) 的成本高很多很多。<br>​	一个结点的 Reflow 很有可能导致子结点，甚至父点以及同级结点的 Reflow。<br>​	在一些高性能的电脑上也许还没什么，但是如果 Reflow 发生在手机上，那么这个过程是非常痛苦和耗电的。</p>
+<p>所以，下面这些动作有很大可能会是成本比较高的。<br>  当你增加、删除、修改 DOM 结点时，会导致 Reflow , Repaint。<br>  当你移动 DOM 的位置<br>  当你修改 CSS 样式的时候。<br>  当你 Resize 窗口的时候（移动端没有这个问题，因为移动端的缩放没有影响布局视口)<br>  当你修改网页的默认字体时。<br>  【获取某些属性时(width,height…)！！！！！】<br>  注：display:none 会触发 reflow，而 visibility:hidden 只会触发 repaint，因为没有发生位置变化。</p>
+<h3 id="优化方案（重绘重排）"><a href="#优化方案（重绘重排）" class="headerlink" title="优化方案（重绘重排）"></a>优化方案（重绘重排）</h3><p>我们已知：浏览器渲染页面时经历了如下“细致”的环节：</p>
+<ol>
+<li>计算需要被加载到节点上的样式结果（Recalculate style–样式重计算）</li>
+<li>为每个节点生成图形和位置（Layout–重排或回流）</li>
+<li>将每个节点填充到图层中（Paint–重绘）</li>
+<li>组合图层到页面上（Composite Layers–图层重组）</li>
+</ol>
+<p>如果我们需要提升性能，需要做的就是减少浏览器在运行时所需要做的工作，即：尽量减少1234步。</p>
+<p><strong>【具体优化方案如下】：</strong></p>
+<ol>
+<li>元素位置移动变换时尽量使用CSS3的<code>transform</code>来代替对<code>top left</code>等的操作<br> 变换<code>transform</code>和透明度<code>opacity</code>的改变仅仅影响图层的组合</li>
+<li>【使用<code>opacity</code>来代替<code>visibility</code>】</li>
+<li>使用<code>visibility</code>不触发重排，但是依然重绘。</li>
+<li>直接使用<code>opacity</code>即触发重绘，又触发重排（GPU底层设计如此！）。</li>
+<li><code>opacity</code>配合图层使用，即不触发重绘也不触发重排。<br>原因：<br>   透明度的改变时，GPU在绘画时只是简单的降低之前已经画好的纹理的alpha值来达到效果，并不需要整体的重绘。<br>   不过这个前提是这个被修改opacity本身必须是一个图层。</li>
+<li>【不要使用table布局】<br> <code>table-cell</code></li>
+<li>将【多次改变样式属性的操作合并成一次】操作<br> 不要一条一条地修改DOM的样式，预先定义好class，然后修改DOM的className</li>
+<li>【将DOM离线后再修改】<br> 由于display属性为none的元素不在渲染树中，对隐藏的元素操作不会引发其他元素的重排。<br> 如果要对一个元素进行复杂的操作时，可以先隐藏它，操作完成后再显示。这样只在隐藏和显示时触发2次重排。</li>
+<li>【利用文档碎片】(<code>documentFragment</code>)——vue使用了该种方式提升性能。</li>
+<li>【不要把获取某些<code>DOM</code>节点的属性值放在一个循环里当成循环的变量】<br> 当你请求向浏览器请求一些 style信息的时候，就会让浏览器flush队列，比如：<ol>
+<li><code>offsetTop, offsetLeft, offsetWidth, offsetHeight</code></li>
+<li><code>scrollTop/Left/Width/Height</code></li>
+<li><code>clientTop/Left/Width/Height</code></li>
+<li><code>width,height</code><br>   当你请求上面的一些属性的时候，浏览器为了给你最精确的值，需要刷新内部队列，<br>   因为队列中可能会有影响到这些值的操作。即使你获取元素的布局和样式信息跟最近发生或改变的布局信息无关，<br>   浏览器都会强行刷新渲染队列。</li>
+</ol>
+</li>
+<li>动画实现过程中，启用GPU硬件加速:<code>transform: tranlateZ(0)</code></li>
+<li>为动画元素新建图层,提高动画元素的<code>z-index</code></li>
+<li>编写动画时，尽量使用如下的API:</li>
+</ol>
+<h3 id="requestAnimationFrame—-请求动画帧"><a href="#requestAnimationFrame—-请求动画帧" class="headerlink" title="requestAnimationFrame—-请求动画帧"></a>requestAnimationFrame—-请求动画帧</h3><ol>
+<li><code>window.requestAnimationFrame()</code><br>  ** 与定时器的不同：定时器需要指定时间，而<code>requestAnimationFrame</code>根据显示器的刷新率执行，不需要指定时间。<br> 说明：该方法会告诉浏览器在下一次重绘之前调用你所指定的函数<ol>
+<li><p>参数：该方法使用一个回调函数作为参数，这个回调函数会在浏览器下一次重绘之前调用。<br> 回调函数会被自动传入一个参数，<code>DOMHighResTimeStamp</code>，标识<code>requestAnimationFrame()</code>开始触发回调函数的当前时间</p>
+</li>
+<li><p>返回值：一个 <code>long</code> 整数，请求 ID ，是回调列表中唯一的标识。是个非零值，没别的意义。你可以传这个值给 <code>window.cancelAnimationFrame()</code> 以取消回调函数。</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>  备注：若你想在浏览器下次重绘之前继续更新下一帧动画，那么回调函数自身必须再次调用<code>window.requestAnimationFrame()</code></p>
+<ol start="2">
+<li><code>window.cancelAnimationFrame(requestID)</code><br> 取消一个先前通过调用<code>window.requestAnimationFrame()</code>方法添加到计划中的动画帧请求。<br> <code>requestID</code>是先前调用<code>window.requestAnimationFrame()</code>方法时返回的值，它是一个时间标识，用法与定时器的id类似。</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B5%8F%E8%A7%88%E5%99%A8/" class="category-chain-item">浏览器</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="print-no-link">#性能优化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>图层与重绘重排</div>
+      <div>http://example.com/2024/05/15/图层与重绘重排/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>jqstudy</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>May 15, 2024</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/05/15/CDN/" title="CDN">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CDN</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/15/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E5%BC%95%E6%93%8E%E4%B8%8E%E9%98%BB%E5%A1%9E/" title="浏览器渲染引擎与阻塞">
+                        <span class="hidden-mobile">浏览器渲染引擎与阻塞</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

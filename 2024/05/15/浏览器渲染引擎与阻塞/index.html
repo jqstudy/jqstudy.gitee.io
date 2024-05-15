@@ -1,0 +1,703 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="jqstudy">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、浏览器渲染引擎主要模块 一个渲染引擎主要包括：HTML解析器，CSS解析器，javascript引擎，布局layout模块，绘图模块  HTML解析器：解释HTML文档的解析器，主要作用是将HTML文本解释成DOM树。 CSS解析器：它的作用是为DOM中的各个元素对象计算出样式信息，为布局提供基础设施 Javascript引擎：使用Javascript代码可以修改网页的内容，也能修改css的信">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器渲染引擎与阻塞">
+<meta property="og:url" content="http://example.com/2024/05/15/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E5%BC%95%E6%93%8E%E4%B8%8E%E9%98%BB%E5%A1%9E/index.html">
+<meta property="og:site_name" content="悠闲博客">
+<meta property="og:description" content="一、浏览器渲染引擎主要模块 一个渲染引擎主要包括：HTML解析器，CSS解析器，javascript引擎，布局layout模块，绘图模块  HTML解析器：解释HTML文档的解析器，主要作用是将HTML文本解释成DOM树。 CSS解析器：它的作用是为DOM中的各个元素对象计算出样式信息，为布局提供基础设施 Javascript引擎：使用Javascript代码可以修改网页的内容，也能修改css的信">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="c:\Users\abc\AppData\Roaming\Typora\typora-user-images\image-20210314094327959.png">
+<meta property="article:published_time" content="2024-05-15T08:28:05.000Z">
+<meta property="article:modified_time" content="2024-05-15T08:28:05.000Z">
+<meta property="article:author" content="jqstudy">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="c:\Users\abc\AppData\Roaming\Typora\typora-user-images\image-20210314094327959.png">
+  
+  
+  
+  <title>浏览器渲染引擎与阻塞 - 悠闲博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>悠闲博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>文档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>文章</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="浏览器渲染引擎与阻塞"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-15 16:28" pubdate>
+          May 15, 2024 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">浏览器渲染引擎与阻塞</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="一、浏览器渲染引擎"><a href="#一、浏览器渲染引擎" class="headerlink" title="一、浏览器渲染引擎"></a>一、浏览器渲染引擎</h2><h3 id="主要模块"><a href="#主要模块" class="headerlink" title="主要模块"></a>主要模块</h3><ul>
+<li><p>一个渲染引擎主要包括：HTML解析器，CSS解析器，javascript引擎，布局layout模块，绘图模块</p>
+<ul>
+<li>HTML解析器：解释HTML文档的解析器，主要作用是将HTML文本解释成DOM树。</li>
+<li>CSS解析器：它的作用是为DOM中的各个元素对象计算出样式信息，为布局提供基础设施</li>
+<li>Javascript引擎：使用Javascript代码可以修改网页的内容，也能修改css的信息，javascript引擎能够解释javascript代码，并通过DOM接口和CSS树接口来修改网页内容和样式信息，从而改变渲染的结果。</li>
+<li>布局（layout）：在DOM创建之后，Webkit需要将其中的元素对象同样式信息结合起来，计算他们的大小位置等布局信息，形成一个能表达这所有信息的内部表示模型</li>
+<li>绘图模块（paint）：使用图形库将布局计算后的各个网页的节点绘制成图像结果</li>
+</ul>
+<blockquote>
+<p>备注：文档对象模型（Document Object Model，简称DOM）</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="大致的渲染过程"><a href="#大致的渲染过程" class="headerlink" title="大致的渲染过程"></a>大致的渲染过程</h3><p>参考如下图片：</p>
+<h6 id=""><a href="#" class="headerlink" title=""></a><img src="C:\Users\abc\AppData\Roaming\Typora\typora-user-images\image-20210314094327959.png" srcset="/img/loading.gif" lazyload alt="image-20210314094327959"></h6><ul>
+<li>浏览器渲染页面的整个过程：浏览器会从上到下解析文档。<ol>
+<li>遇见 HTML 标记，调用HTML解析器解析为对应的 token （一个token就是一个标签文本的序列化）并构建 DOM 树（就是一块内存，保存着tokens，建立它们之间的关系）。</li>
+<li>遇见 style&#x2F;link 标记调用相应解析器处理CSS标记，并构建出CSS样式树。</li>
+<li>遇见 script 标记 调用javascript引擎 处理script标记、绑定事件、修改DOM树&#x2F;CSS树等</li>
+<li>将 DOM树 与 CSS树 合并成一个渲染树。</li>
+<li>根据渲染树来渲染，以计算每个节点的几何信息（这一过程需要依赖GPU）。</li>
+<li>最终将各个节点绘制到屏幕上。</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>以上这些模块依赖很多其他的基础模块，包括要使用到网络 存储 2D&#x2F;3D图像 音频视频解码器 和 图片解码器。<br>所以渲染引擎中还会包括如何使用这些依赖模块的部分。</p>
+</blockquote>
+<h2 id="二、阻塞渲染"><a href="#二、阻塞渲染" class="headerlink" title="二、阻塞渲染"></a>二、阻塞渲染</h2><h4 id="1-关于css阻塞："><a href="#1-关于css阻塞：" class="headerlink" title="1.关于css阻塞："></a>1.关于css阻塞：</h4><p>​    <strong>声明：只有link引入的外部css才能够产生阻塞。</strong></p>
+<ol>
+<li>style标签中的样式：</li>
+</ol>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs gcode"><span class="hljs-comment">(1)</span>. 由html解析器进行解析 <span class="hljs-comment">(html解析器是异步解析的)</span>；<br><span class="hljs-comment">(2)</span>. 页面style标签写的内部样式是异步解析的，容易产生闪屏现象；<br>	 - 异步解析时，结构解析完但样式还没有解析完<br>     - 例如：结构只有一个div, 但样式对这个div修改了<span class="hljs-number">6</span>万次颜色，结构很快就解析完了，用户会看到盒子一直再闪。<br><span class="hljs-comment">(3)</span>. 浏览器加载资源是异步的；<br><span class="hljs-comment">(4)</span>. 不阻塞浏览器渲染；<br><span class="hljs-comment">(5)</span>. 不阻塞DOM解析；<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>link引入的外部css样式（推荐使用的方式）：</li>
+</ol>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs gcode"><span class="hljs-comment">(1)</span>. 由CSS解析器进行解析 <span class="hljs-comment">(CSS解析器是同步解析的)</span>；<br><span class="hljs-comment">(2)</span>. 阻塞浏览器渲染<span class="hljs-comment">(即DOM解析完要等待CSS解析完才可以在页面显示，可以利用这种阻塞避免“闪屏现象”)</span>；    <br><span class="hljs-comment">(3)</span>. 阻塞其后面的js语句的执行；<span class="hljs-comment">(CSS能设置样式，JS也能，避免对同一个元素设置样式冲突)</span><br><span class="hljs-comment">(4)</span>. 不阻塞DOM的解析<span class="hljs-comment">(绝大多数浏览器的工作方式)</span><br></code></pre></td></tr></table></figure>
+<p>​<br>3. 优化核心理念：尽可能快的提高外部css加载速度</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scss">(<span class="hljs-number">1</span>). 使用CDN节点进行外部资源加速。<br>(<span class="hljs-number">2</span>). 对css进行压缩(利用打包工具，比如webpack,gulp等)。<br>(<span class="hljs-number">3</span>). 减少http请求数，将多个css文件合并。<br>(<span class="hljs-number">4</span>). 优化样式表的代码<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-关于js阻塞："><a href="#2-关于js阻塞：" class="headerlink" title="2.关于js阻塞："></a>2.关于js阻塞：</h4><ol>
+<li>阻塞后续DOM解析:<br>原因：浏览器不知道后续脚本的内容，如果先去解析了下面的DOM，而随后的js删除了后面所有的DOM，<br> 那么浏览器就做了无用功，浏览器无法预估脚本里面具体做了什么操作，例如像document.write<br> 这种操作，索性全部停住，等脚本执行完了，浏览器再继续向下解析DOM。	</li>
+<li>阻塞页面渲染:<br>原因：js中也可以给DOM设置样式，浏览器等该脚本执行完毕，渲染出一个最终结果，避免做无用功。</li>
+<li>阻塞后续js的执行:<br>原因：维护依赖关系，例如：必须先引入jQuery再引入bootstrap</li>
+</ol>
+<h4 id="3-备注"><a href="#3-备注" class="headerlink" title="3.备注"></a>3.备注</h4><p>  【备注1】：css的解析和js的执行是互斥的（互相排斥），css解析的时候js停止执行，js执行的时候css停止解析。</p>
+<p>  【备注2】：无论css阻塞，还是js阻塞，都不会阻塞浏览器加载外部资源（图片、视频、样式、脚本等）<br>            原因：浏览器始终处于一种：“先把请求发出去”的工作模式，只要是涉及到网络请求的内容，<br>                无论是：图片、样式、脚本，都会先发送请求去获取资源，至于资源到本地之后什么时候用，<br>                由浏览器自己协调。这种做法效率很高。</p>
+<p>  【备注3】：WebKit 和 Firefox 都进行了【预解析】这项优化。在执行js脚本时，浏览器的其他线程会预解析文档的其余部分，<br>            找出并加载需要通过网络加载的其他资源。通过这种方式，资源可以在并行连接上加载，从而提高总体速度。请注意，<br>            预解析器不会修改 DOM 树</p>
+<blockquote>
+<p>在上述的过程中，网页在加载和渲染过程中会触发“DOMContentLoaded”和“onload”事件<br>分别是在DOM树构建（解析）完成之后，以及DOM树构建完并且网页所依赖的资源都加载完之后</p>
+</blockquote>
+<ul>
+<li>上面介绍的是一个完整的渲染过程，但现代网页很多都是动态的，这意味着在渲染完成之后，由于网页的动画或者用户的交互，<br>浏览器其实一直在不停地重复执行渲染过程。（重绘重排），以上的数字表示的是基本顺序，这不是严格一致的，<br>这个过程可能重复也可能交叉</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B5%8F%E8%A7%88%E5%99%A8/" class="category-chain-item">浏览器</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="print-no-link">#性能优化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>浏览器渲染引擎与阻塞</div>
+      <div>http://example.com/2024/05/15/浏览器渲染引擎与阻塞/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>jqstudy</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>May 15, 2024</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/05/15/%E5%9B%BE%E5%B1%82%E4%B8%8E%E9%87%8D%E7%BB%98%E9%87%8D%E6%8E%92/" title="图层与重绘重排">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">图层与重绘重排</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/15/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8A%9F%E8%83%BD%E4%B8%8E%E7%BB%84%E6%88%90/" title="浏览器功能与组成">
+                        <span class="hidden-mobile">浏览器功能与组成</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
