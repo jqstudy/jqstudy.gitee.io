@@ -3,7 +3,7 @@ layout: web
 title: Worker详解
 date: 2023-10-24 13:34:01
 tags: Worker
-categories: web前端
+categories: 浏览器
 ---
 
 Web Worker是一项 HTML5 的新特性，可以再web页面中创建后台线程，从而可以让 JavaSscript 在主线程运行的同时，在后台线程中执行耗时的操作。这使得 Web 应用程序更加的流畅，而不会出现 UI 卡顿或其它性能问题。在本文中，我们将详细讨论 Web Worker，包括用法、示例和使用场景。
